@@ -1,0 +1,47 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Create a new account";
+    ViewData["BodyClass"] = "custom-body-class";
+    ViewData["BodyStyle"] = "background: #caecf3;";
+}
+
+
+<div class="card row ChatterBox_card mt-5">
+    <div class="justify-content-evenly align-items-baseline mt-3" style="display: flex">
+        <a class="bi bi-chevron-left ChatterBox_back" href="../../"></a>
+    </div>
+    <section>
+        <h2 class="mt-2" style="text-align: center">@ViewData["Title"]</h2>
+        <hr />
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <br />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating ChatterBox_form">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                <label asp-for="Input.Email"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-floating ChatterBox_form">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.Password"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-floating ChatterBox_form">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.ConfirmPassword"></label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="justify-content-evenly align-items-center mb-5" style="display: flex">
+                <button id="registerSubmit" type="submit" class="vw-25 ChatterBox_btn_dark btn btn-lg">Sign in</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }

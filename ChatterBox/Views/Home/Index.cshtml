@@ -1,8 +1,19 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    ViewData["BodyClass"] = "custom-body-class";
+    ViewData["BodyStyle"] = "background: #caecf3;";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="card-body row ChatterBox_card mt-5" style="height: 50vh">
+    <div class="col-md-7 ChatterBox_subcard">
+        <h5 class="display-4 text-center fw-bold">Welcome to ChatterBox</h5>
+        <p class="text-center">We are happy to have you on our beautiful website. It is the best place for you and your coworkers to comunicate with eachother. What are you waiting for? Join now!</p>
+    </div>
+
+    <br />
+
+    <div class="col-md-5 ChatterBox_subcard">
+        <img class="user_photo" src="/user.png" width="100" height="100" />
+        @await Html.PartialAsync("_LoginPartial")
+    </div>
 </div>

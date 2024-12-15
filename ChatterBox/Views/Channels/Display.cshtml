@@ -1,0 +1,40 @@
+﻿@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ApplicationUser _User = UserManager.GetUserAsync(User).Result;
+    string _UserName = _User.UserName;
+    _UserName = _UserName.Split("@")[0];
+    _UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
+}
+
+<div class="ChatterBox_sitecard">
+    <div class="ChatterBox_leftPanel">
+        <div class="ChatterBox_leftSubPanel">
+            <a class="bi bi-person-circle" style="color: white; font-size: 80px;" href="/Users/Show/@Model.Id"></a>
+            <h2 style="color:white">@_UserName</h2>
+            <h4 style="color: #4c5c75">@_User.Id</h4>
+        </div>
+        <div class="ChatterBox_leftSubPanel" style="align-items: start; margin-left: 2vh;">
+            <div class="bi bi-envelope" style="color: white; font-size: 18px;"> Inbox</div>
+            <div class="bi bi-wechat" style="color: white; font-size: 18px;"> Join Chats</div>
+            <br />
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="bi bi-people-fill" style="color: white; font-size: 18px;">Categories</div>
+                <div class="bi bi-grid" style="color: white; font-size: 18px;">Users</div>
+            }
+        </div>
+        <div class="ChatterBox_leftSubPanel">
+            <div class="bi bi-globe-europe-africa" style="color: white; font-size: 18px;"></div>
+        </div>
+    </div>
+    <div class="ChatterBox_rightpanel">
+        <div style="background-color: purple"> Chats </div>
+        <div style="background-color: green;"> List of chats</div>
+        <div style="background-color: pink"> Chat </div>
+        <div style="background-color: lime;"> Messages </div>
+    </div>
+</div>

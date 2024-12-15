@@ -1,0 +1,50 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in to your account";
+    ViewData["BodyClass"] = "custom-body-class";
+    ViewData["BodyStyle"] = "background: #caecf3;";
+}
+
+<div class="card row ChatterBox_card mt-5">
+    <div class="justify-content-evenly align-items-baseline mt-3" style="display: flex">
+        <a class="bi bi-chevron-left ChatterBox_back" href="../../"></a>
+    </div>
+    <section>
+        <h1 class="mt-2" style="text-align:center">@ViewData["Title"]</h1>
+        <hr />
+        <form id="account" method="post" asp-controller="Account">
+            <br />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating ChatterBox_form">
+                <input asp-for="Input.Email" type="email" class="form-control" autocomplete="username" aria-required="true" />
+                <label asp-for="Input.Email" class="form-labe"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-floating ChatterBox_form">
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+                <label asp-for="Input.Password" class="form-label"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <br />
+            <div>
+                <div class="checkbox ChatterBox_form" style="color: white">
+                    <label asp-for="Input.RememberMe" class="form-label">
+                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                    </label>
+                </div>
+            </div>
+            <br />
+            <div class="justify-content-center mb-5" style="display: flex">
+                <button id="login-submit" type="submit" class="vw-25 ChatterBox_btn_dark btn btn-lg">Log in</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,22 +1,140 @@
-html {
-  font-size: 14px;
+.ChatterBox_btn_dark{
+    background-color: #2b3c58;
+    color: white;
+    font-size: 30px;
 }
+
+    .ChatterBox_btn_dark:hover {
+        background-color: #3a4f6a;
+        color: white;
+    }
+
+    .ChatterBox_btn:active {
+        background-color: #2b3c58;
+        border-color: transparent;
+    }
+
+.ChatterBox_btn_del {
+    background-color: #c64a70;
+    color: white;
+    font-size: 30px;
+}
+
+    .ChatterBox_btn_del:hover {
+        background-color: #C82B28;
+        color: white;
+    }
+
+.ChatterBox_card {
+    margin: 0 150px;
+    background-color: #24344d;
+    padding: 0;
+    border-radius: 20px;
+    color: white;
+}
+
+.ChatterBox_chat {
+    background-color: #e4f6f8;
+    /*border: 1px solid #1f163b;*/
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin: 1px 0px;
+}
+
+    .ChatterBox_chat:hover {
+        background-color: #e4f6f8;
+    }
+
+.ChatterBox_sitecard {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+}
+
+.ChatterBox_leftPanel {
+    background-color: #24344d;
+    display: grid;
+    grid-template-rows: 1fr 2fr 1fr;
+    grid-gap: 20px;
+}
+
+.ChatterBox_leftSubPanel {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.ChatterBox_rightpanel {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: 1fr 5fr;
+}
+
+.ChatterBox_userPanel {
+    display: grid;
+    grid-template-rows: 1fr 6fr;
+}
+
+.ChatterBox_subcard {
+    background-color: #24344d;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ChatterBox_form {
+    color: black;
+    margin: 0 100px;
+}
+
+.ChatterBox_back {
+    margin-right: auto;
+    color: white;
+    font-size: 30px;
+    text-decoration: none;
+}
+
+    .ChatterBox_back:hover {
+        color: white;
+    }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+@media (max-width: 991px) {
+    .ChatterBox_card {
+        margin: 0 50px;
+        padding: 14px;
+    }
+
+    .ChatterBox_form {
+        margin: 0 25px;
+    }
+}
+
+@media (max-width: 770px) {
+    .ChatterBox_card {
+        margin: 0 0;
+        padding: 14px;
+    }
+
+    .ChatterBox_subcard {
+        margin: 0 0;
+    }
+
+    .user_photo {
+        display: none;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
