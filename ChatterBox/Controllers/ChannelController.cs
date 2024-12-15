@@ -17,7 +17,7 @@ namespace ChatterBox.Controllers
             var channels = from channel in _db.Articles
                            select channel;
 
-            ViewBag.Articles = articles;
+            ViewBag.Channels = channels;
 
             return View();
         }
