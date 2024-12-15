@@ -24,7 +24,7 @@ namespace ChatterBox.Controllers
 
         public ActionResult Show(int id)
         {
-            Article? channel = _db.Channel.Find(id);
+            Channel? channel = _db.Channel.Find(id);
 
             ViewBag.Channel = channel;
 
