@@ -1,10 +1,10 @@
 ﻿@using ChatterBox.Models
 @using Microsoft.AspNetCore.Identity
 
-@inject UserManager<ApplicationUser> UserManager
+@inject UserManager<ApplicationUser> MyUserManager
 
 @{
-    ApplicationUser _User = UserManager.GetUserAsync(User).Result;
+    ApplicationUser _User = MyUserManager.GetUserAsync(User).Result;
     string _UserName = _User.UserName;
     _UserName = _UserName.Split("@")[0];
     _UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
@@ -13,7 +13,7 @@
 <div class="ChatterBox_sitecard">
     <div class="ChatterBox_leftPanel">
         <div class="ChatterBox_leftSubPanel">
-            <a class="bi bi-person-circle" style="color: white; font-size: 80px;" href="/Users/Show/@Model.Id"></a>
+            <a class="bi bi-person-circle" style="color: white; font-size: 80px;" href="/Users/Show/@_User.Id"></a>
             <h2 style="color:white">@_UserName</h2>
             <h4 style="color: #4c5c75">@_User.Id</h4>
         </div>
@@ -31,10 +31,13 @@
             <div class="bi bi-globe-europe-africa" style="color: white; font-size: 18px;"></div>
         </div>
     </div>
-    <div class="ChatterBox_rightpanel">
-        <div style="background-color: purple"> Chats </div>
-        <div style="background-color: green;"> List of chats</div>
-        <div style="background-color: pink"> Chat </div>
-        <div style="background-color: lime;"> Messages </div>
+    <div class="ChatterBox_rightPanel">
+        <div class="ChatterBox_upperSubPanel">
+            <h1>Channels</h1>
+            <div class="bi bi-plus-lg ChatterBox_btn_light"></div>
+        </div>
+        <div class="ChatterBox_upperSubPanel"> Chat </div>
+        <div class="ChatterBox_lowerSubPanel"> List of channels </div>
+        <div class="ChatterBox_lowerSubPanel"> Messages </div>
     </div>
 </div>

@@ -1,4 +1,6 @@
 ﻿@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
 
 @model ApplicationUser
 
@@ -9,30 +11,34 @@
 }
 
 <div class="ChatterBox_sitecard">
-    <div class="ChatterBox_leftPanel">
-        <div class="ChatterBox_leftSubPanel">
-            <a class="bi bi-person-circle" style="color: white; font-size: 80px;" href="/Users/Show/@Model.Id"></a>
-            <h2 style="color:white">@_UserName</h2>
-            <h4 style="color: #4c5c75">@Model.UserName</h4>
+
+    @Html.Partial("SideBar", Model)
+
+    <div class="ChatterBox_rightPanel">
+        <div class="ChatterBox_upperSubPanel">
+            <h1>Channels</h1>
+            <div class="bi bi-plus-lg ChatterBox_btn_light"></div>
         </div>
-        <div class="ChatterBox_leftSubPanel" style="align-items: start; margin-left: 2vh;">
-            <div class="bi bi-envelope" style="color: white; font-size: 18px;"> Inbox</div>
-            <div class="bi bi-wechat" style="color: white; font-size: 18px;"> Join Chats</div>
-            <br />
+        <div class="ChatterBox_upperSubPanel">
+            <h1>User Information</h1>
+            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { AreaAttribute = "" })">
+                <button type="submit" class="bi bi-box-arrow-right ChatterBox_btn_light" style="font-size: 25px;"></button>
+            </form>
+        </div>
+        <div class="ChatterBox_lowerSubPanel"></div>
+        <div class="ChatterBox_lowerSubPanel" style="padding: 1rem">
+            <h2>About</h2>
+            <hr />
+            <p><strong>Username:</strong> <span>@_UserName</span></p>
+            <p><strong>Email:</strong> <span>@Model.Email</span></p>
             @if (User.IsInRole("Admin"))
             {
-                <div class="bi bi-people-fill" style="color: white; font-size: 18px;">Categories</div>
-                <div class="bi bi-grid" style="color: white; font-size: 18px;">Users</div>
+                <p><strong>Role:</strong> Admin</p>
+            }
+            else 
+            {
+                <p><strong>Role:</strong> User</p>
             }
         </div>
-        <div class="ChatterBox_leftSubPanel">
-            <div class="bi bi-globe-europe-africa" style="color: white; font-size: 18px;"></div>
-        </div>
-    </div>
-    <div class="ChatterBox_userPanel">
-        <div style="background-color: green;">
-            <h2>User Information</h2>
-        </div>
-        <div style="background-color: lime;"></div>
     </div>
 </div>

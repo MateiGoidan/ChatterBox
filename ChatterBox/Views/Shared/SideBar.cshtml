@@ -1,0 +1,35 @@
+﻿@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
+
+@model ChatterBox.Models.ApplicationUser
+
+@{
+    string _UserId = Model.Id;
+    string _UserName = Model.UserName;
+    _UserName = _UserName.Split("@")[0];
+    _UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
+}
+
+<div class="ChatterBox_leftPanel">
+    <div class="ChatterBox_leftSubPanel">
+        <a class="bi bi-person-circle ChatterBox_link" style="font-size: 80px;" asp-controller="Users" asp-action="Show" asp-route-id="@_UserId"></a>
+        <h2 style="color:white">@_UserName</h2>
+        <h4 style="color: #4c5c75">@Model.UserName</h4>
+    </div>
+    <div class="ChatterBox_leftSubPanel" style="align-items: start; padding: 2vh;">
+        <a class="bi bi-person-fill ChatterBox_link" asp-controller="Users" asp-action="Show" asp-route-id="@Model.Id"> Account </a>
+        <div class="bi bi-envelope-fill ChatterBox_link"> Inbox </div>
+        <div class="bi bi-wechat ChatterBox_link"> Join Chats </div>
+        <br />
+        @if (User.IsInRole("Admin"))
+        {
+            <h5 style="color: #4c5c75">Administrator</h5>
+            <a class="bi bi-people-fill ChatterBox_link" asp-area="" asp-controller="Users" asp-action="List"> Users </a>
+            <div class="bi bi-grid-fill ChatterBox_link"> Categories </div>
+        }
+    </div>
+    <div class="ChatterBox_leftSubPanel">
+        <div class="bi bi-globe-europe-africa ChatterBox_link"></div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+﻿@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
+
+@model ApplicationUser
+
+<div class="ChatterBox_sitecard">
+
+    @Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
+
+    <div class="ChatterBox_rightPanel">
+        <div class="ChatterBox_upperSubPanel">
+            <h1>Channels</h1>
+            <div class="bi bi-plus-lg ChatterBox_btn_light"></div>
+        </div>
+        <div class="ChatterBox_upperSubPanel">
+            <h1>Users List</h1>
+        </div>
+        <div class="ChatterBox_lowerSubPanel"></div>
+        <div class="ChatterBox_lowerSubPanel" style="padding: 1rem">
+            @if (ViewBag.TempMsg != null)
+            {
+                <h2 class="alert-success p-3 rounded-3 text-center mb-5">@ViewBag.TempMsg</h2>
+                <br />
+            }
+
+            @if (ViewBag.Users.Count == 0)
+            {
+                <h2 class="alert-danger p-3 rounded-3 text-center mb-5">No users found!</h2>
+                <br />
+            }
+            else
+            {
+                @foreach (ApplicationUser _Elem in ViewBag.Users)
+                {
+                    @Html.Partial("UserCard", _Elem)
+                }
+            }
+        </div>
+    </div>
+</div>

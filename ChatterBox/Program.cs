@@ -16,6 +16,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -55,7 +56,10 @@ app.UseAuthorization();
 
 app.MapControllerRoute(name: "HomePage", pattern: "", defaults: new { controller = "Home", action = "Index" });
 
+app.MapControllerRoute(name: "UsersList", pattern: "Users/List", defaults: new { controller = "Users", action = "List" });
 app.MapControllerRoute(name: "UsersProfile", pattern: "Users/Show/{id}", defaults: new { controller = "Users", action = "Show" });
+app.MapControllerRoute(name: "UsersPromote", pattern: "Users/Promote/{_ID}", defaults: new { controller = "Users", action = "Promote" });
+app.MapControllerRoute(name: "UsersDemote", pattern: "Users/Demote/{_ID}", defaults: new { controller = "Users", action = "Demote" });
 
 app.MapRazorPages();
 

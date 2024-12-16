@@ -14,6 +14,12 @@
         border-color: transparent;
     }
 
+.ChatterBox_btn_light{
+    font-size: 25px;
+    border: none;
+    background: none;
+}
+
 .ChatterBox_btn_del {
     background-color: #c64a70;
     color: white;
@@ -22,6 +28,16 @@
 
     .ChatterBox_btn_del:hover {
         background-color: #C82B28;
+        color: white;
+    }
+
+.ChatterBox_link {
+    color: white;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+    .ChatterBox_link:hover{
         color: white;
     }
 
@@ -65,15 +81,23 @@
     align-items: center;
 }
 
-.ChatterBox_rightpanel {
+.ChatterBox_rightPanel {
     display: grid;
     grid-template-columns: 1fr 3fr;
-    grid-template-rows: 1fr 5fr;
+    grid-template-rows: 1fr 6fr;
 }
 
-.ChatterBox_userPanel {
-    display: grid;
-    grid-template-rows: 1fr 6fr;
+.ChatterBox_upperSubPanel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 2px solid #d4d4d4;
+    border-left: 2px solid #d4d4d4;
+}
+
+.ChatterBox_lowerSubPanel {
+    border-left: 2px solid #d4d4d4;
 }
 
 .ChatterBox_subcard {
@@ -128,7 +152,7 @@
         margin: 0 0;
     }
 
-    .user_photo {
+    .ChatterBox_user_photo {
         display: none;
     }
 }
