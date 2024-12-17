@@ -1,0 +1,18 @@
+<h2>Afisare canal</h2>
+<br />
+
+<p>@ViewBag.Channel.Title</p>
+<p>@ViewBag.Channel.Content</p>
+<p>@ViewBag.Channel.Date</p>
+
+<br />
+
+<form method="post" action="/Channels/Delete/@ViewBag.Channel.Id">
+
+    <button type="submit" class="btn btn-danger">Sterge canalul</button>
+
+</form>
+
+<br />
+
+<a href="/Channels/Index" class="btn btn-success">Afisare canale</a>
