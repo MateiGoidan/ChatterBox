@@ -1,0 +1,19 @@
+@using ChatterBox.Models
+
+@model Category
+
+<h2>Editare categorie</h2>
+
+<form method="post" action="/Categories/Edit/@Model.Id">
+
+    @Html.Label("Title", "Title: ")
+    @Html.Editor("Title")
+    @Html.ValidationMessage("Title")
+
+    <br />
+    <br />
+
+    <button class="btn ChatterBox_btn_dark" style="font-size:20px;" type="submit">Done</button>
+</form>
+
+

@@ -1,97 +1,134 @@
+using ChatterBox.Data;
 using ChatterBox.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
+
 
 namespace ChatterBox.Controllers
 {
-    public class CategoriesController : Controller
-    {
-        private readonly AppDbContext _db;
+	[Authorize(Roles = "Admin")]
+	public class CategoriesController : Controller
+	{
+		private readonly ApplicationDbContext MyDataBase;
+		private readonly UserManager<ApplicationUser> MyUserManager;
+		private readonly RoleManager<IdentityRole> MyRoleManager;
+		public CategoriesController(ApplicationDbContext _MyDataBase, UserManager<ApplicationUser> _MyUserManager, RoleManager<IdentityRole> _MyRoleManager)
+		{
+			MyDataBase = _MyDataBase;
+			MyUserManager = _MyUserManager;
+			MyRoleManager = _MyRoleManager;
+		}
 
-        public CategoriesController(AppDbContext context)
-        {
-            _db = context;
-        }
+		public IActionResult List()
+		{
+			ViewBag.Categories = MyDataBase.Categories;
 
-        public IActionResult Index()
-        {
-            var categories = from categ in _db.Categories
-                             select categ;
+			if (TempData.ContainsKey("Message"))
+			{
+				ViewBag.TempMsg = TempData["Message"];
+			}
 
-            ViewBag.Categories = categories;
+			return View();
+		}
 
-            return View();
-        }
+		public IActionResult New()
+		{
+			return View();
+		}
 
-        public ActionResult Show(int id)
-        {
-            Category categ = _db.Categories.Find(id);
+		[HttpPost]
+		public IActionResult New(Category _Category)
+		{
+			if (!ModelState.IsValid)
+			{
+				return View(_Category);
+			}
 
-            ViewBag.Category = categ;
+			try
+			{
+				MyDataBase.Categories.Add(_Category);
 
-            return View();
-        }
+				MyDataBase.SaveChanges();
 
-        public IActionResult New()
-        {
-            return View();
-        }
+				TempData["TempMsg"] = "New category added!";
 
-        [HttpPost]
-        public IActionResult New(Category categ)
-        {
-            try
-            {
-                _db.Categories.Add(categ);
+				return RedirectToAction("List");
+			}
+			catch
+			{
+				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to add the category. Please contact the dev team in order to resolve this issue." });
+			}
+		}
 
-                _db.SaveChanges();
+		public IActionResult Edit(int _Id)
+		{
+			try
+			{
+				return View(MyDataBase.Categories.Find(_Id));
+			}
+			catch
+			{
+				return View("Error", new ErrorViewModel { RequestId = "Edit attempt on non existing category!" });
+			}
+		}
 
-                return RedirectToAction("Index");
-            }
-            catch (Exception)
-            {
-                return View();
-            }
+		[HttpPost]
+		public IActionResult Edit(int _Id, Category _Category)
+		{
+			_Category.Id = _Id;
 
-        }
+			Category? _OriginalCategory = MyDataBase.Categories.Find(_Id);
 
-        public IActionResult Edit(int id)
-        {
-            Category categ = _db.Categories.Find(id);
+			if (_OriginalCategory == null)
+			{
+				return View("Error", new ErrorViewModel { RequestId = "Edit attempt on non existing category!" });
+			}
 
-            ViewBag.Categories = categ;
+			if (!ModelState.IsValid)
+			{
+				return View(_Category);
+			}
 
-            return View();
-        }
+			try
+			{
+				_OriginalCategory.Title = _Category.Title;
 
-        [HttpPost]
-        public ActionResult Edit(int id, Category requestCateg)
-        {
-            Category categ = _db.Categories.Find(id);
+				MyDataBase.SaveChanges();
 
-            try
-            {
-                categ.CategoryName = requestCateg.CategoryName;
+				TempData["TempMsg"] = "Edit completed!";
 
-                _db.SaveChanges();
+				return RedirectToAction("List");
+			}
+			catch
+			{
+				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to edit the category. Please contact the dev team in order to resolve this issue." });
+			}
+		}
 
-                return RedirectToAction("Index");
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Edit", categ.Id);
-            }
-        }
+		[HttpPost]
+		public IActionResult Delete(int _Id)
+		{
+			Category? _Category = MyDataBase.Categories.Find(_Id);
 
-        [HttpPost]
-        public ActionResult Delete(int id)
-        {
-            Category categ = _db.Categories.Find(id);
+			if (_Category == null)
+			{
+				return View("Error", new ErrorViewModel { RequestId = "Delete attempt on non existing category!" });
+			}
 
-            _db.Categories.Remove(categ);
+			try
+			{
+				MyDataBase.Categories.Remove(_Category);
 
-            _db.SaveChanges();
+				MyDataBase.SaveChanges();
 
-            return RedirectToAction("Index");
-        }
-    }
+				return RedirectToAction("List");
+			}
+			catch
+			{
+				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to delete the category. Please contact the dev team in order to resolve this issue." });
+			}
+		}
+	}
 }

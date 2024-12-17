@@ -1,0 +1,16 @@
+﻿<h2>Formular adaugare categorie</h2>
+
+<form method="post" action="/Categories/New">
+
+    <label>Denumire categorie</label>
+
+    @Html.Label("Title", "Title: ")
+    @Html.TextBox("Title")
+    @Html.ValidationMessage("Title")
+
+    <br />
+    <br />
+
+    <button class="btn ChatterBox_btn_dark" style="font-size:20px;" type="submit">Done</button>
+
+</form>

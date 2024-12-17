@@ -1,19 +1,39 @@
+@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
+
+@model Channel
+
 <h2>Formular adaugare canal</h2>
 
 <form method="post" action="/Channels/New">
 
     <label>Titlu canal</label>
 
-    <input type="text" name="Title" />
+    @Html.Label("Name", "Name: ")
+    <br />
+    @Html.TextBox("Name")
+    @Html.ValidationMessageFor(c => c.Name, "", new { @class = "text-danger" })
 
     <br />
-
-    <label>Continut canal</label>
-
-    <textarea name="Content"></textarea>
-
     <br />
 
-    <button type="submit" class="btn btn-success">Adauga canalul</button>
+    @Html.Label("Description", "Description: ")
+    <br />
+    @Html.TextArea("Description")
+    @Html.ValidationMessage("Description", null, new { @class = "text-danger" })
+
+    <br />
+    <br />
+
+    @Html.Label("CategoryId", "Category: ")
+    <br />
+    @Html.DropDownListFor(m => m.CategoryId, new SelectList(ViewBag.CategoriesList, "Value", "Text"), "Select category", new { @class = "form-control" })
+    @Html.ValidationMessage("CategoryId", null, new { @class = "text-danger" })
+
+    <br />
+    <br />
+
+    <button class="btn BMCA_btn" style="font-size:20px;" type="submit">Done</button>
 
 </form>

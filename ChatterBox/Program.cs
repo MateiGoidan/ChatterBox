@@ -61,6 +61,13 @@ app.MapControllerRoute(name: "UsersProfile", pattern: "Users/Show/{id}", default
 app.MapControllerRoute(name: "UsersPromote", pattern: "Users/Promote/{_ID}", defaults: new { controller = "Users", action = "Promote" });
 app.MapControllerRoute(name: "UsersDemote", pattern: "Users/Demote/{_ID}", defaults: new { controller = "Users", action = "Demote" });
 
+app.MapControllerRoute(name: "CategoriesList", pattern: "Categories/List", defaults: new { controller = "Categories", action = "List" });
+app.MapControllerRoute(name: "CategoriesNew", pattern: "Categories/New", defaults: new { controller = "Categories", action = "New" });
+app.MapControllerRoute(name: "CategoriesEdit", pattern: "Categories/Edit/{_Id}", defaults: new { controller = "Categories", action = "Edit" });
+app.MapControllerRoute(name: "CategoriesDelete", pattern: "Categories/Delete/{_Id}", defaults: new { controller = "Categories", action = "Delete" });
+
+app.MapControllerRoute(name: "ChannelsNew", pattern: "Channels/New", defaults: new { controller = "Channels", action = "New" });
+
 app.MapRazorPages();
 
 app.Run();
