@@ -1,0 +1,27 @@
+<h2>Editare canal</h2>
+
+<form method="post" action="/Channels/Edit/@ViewBag.Channel.Id">
+   
+    <label>Titlu canal</label>
+    <br />
+
+    <input type="text" name="Title" value="@ViewBag.Channel.Title" />
+    <br /><br />
+
+    <label>Continut canal</label>
+    <br />
+
+    <input type="text" name="Content" value="@ViewBag.Channel.Content" />
+    <br /><br />
+
+    <label>Data</label>
+    <br />
+
+    <input type="text" name="Date" value="@ViewBag.Channel.Date" />
+    <br />
+
+    <button type="submit" class="btn btn-info">Modifica canal</button>
+
+</form>
+
+
