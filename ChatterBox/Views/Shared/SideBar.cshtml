@@ -13,12 +13,12 @@
 
 <div class="ChatterBox_leftPanel">
     <div class="ChatterBox_leftSubPanel">
-        <a class="bi bi-person-circle ChatterBox_link" style="font-size: 80px;" asp-controller="Users" asp-action="Show" asp-route-id="@_UserId"></a>
+        <a class="bi bi-person-circle ChatterBox_link" style="font-size: 80px;" asp-controller="Users" asp-action="Show" asp-route-_Id="@_UserId"></a>
         <h2 style="color:white">@_UserName</h2>
         <h4 style="color: #4c5c75">@Model.UserName</h4>
     </div>
     <div class="ChatterBox_leftSubPanel" style="align-items: start; padding: 2vh;">
-        <a class="bi bi-person-fill ChatterBox_link" asp-controller="Users" asp-action="Show" asp-route-id="@Model.Id"> Account </a>
+        <a class="bi bi-person-fill ChatterBox_link" asp-controller="Users" asp-action="Show" asp-route-_Id="@Model.Id"> Account </a>
         <div class="bi bi-envelope-fill ChatterBox_link"> Inbox </div>
         <div class="bi bi-wechat ChatterBox_link"> Join Chats </div>
         <br />
@@ -26,7 +26,7 @@
         {
             <h5 style="color: #4c5c75">Administrator</h5>
             <a class="bi bi-people-fill ChatterBox_link" asp-area="" asp-controller="Users" asp-action="List"> Users </a>
-            <a class="bi bi-grid-fill ChatterBox_link" asp-are="" asp-controller="Categories" asp-action="List"> Categories </a>
+            <a class="bi bi-grid-fill ChatterBox_link" asp-area="" asp-controller="Categories" asp-action="List"> Categories </a>
         }
     </div>
     <div class="ChatterBox_leftSubPanel">

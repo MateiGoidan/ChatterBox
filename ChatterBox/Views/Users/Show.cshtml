@@ -17,12 +17,12 @@
     <div class="ChatterBox_rightPanel">
         <div class="ChatterBox_upperSubPanel">
             <h1>Channels</h1>
-            <a class="bi bi-plus-lg ChatterBox_btn_light" href="/Channels/New"></a>
+            <a class="bi bi-plus-lg ChatterBox_btn_icon" href="/Channels/New"></a>
         </div>
         <div class="ChatterBox_upperSubPanel">
             <h1>User Information</h1>
             <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { AreaAttribute = "" })">
-                <button type="submit" class="bi bi-box-arrow-right ChatterBox_btn_light" style="font-size: 25px;"></button>
+                <button type="submit" class="bi bi-box-arrow-right ChatterBox_btn_icon"></button>
             </form>
         </div>
         <div class="ChatterBox_lowerSubPanel"></div>

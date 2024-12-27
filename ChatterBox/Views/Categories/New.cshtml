@@ -1,16 +1,41 @@
-﻿<h2>Formular adaugare categorie</h2>
+﻿@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
 
-<form method="post" action="/Categories/New">
+@model Category
 
-    <label>Denumire categorie</label>
+<div class="ChatterBox_sitecard">
 
-    @Html.Label("Title", "Title: ")
-    @Html.TextBox("Title")
-    @Html.ValidationMessage("Title")
+    @Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
 
-    <br />
-    <br />
+    <div class="ChatterBox_rightPanel">
+        <div class="ChatterBox_upperSubPanel">
+            <h1>Channels</h1>
+            <a class="bi bi-plus-lg ChatterBox_btn_icon" href="/Channels/New"></a>
+        </div>
+        <div class="ChatterBox_upperSubPanel">
+            <h1>New Category</h1>
+        </div>
+        <div class="ChatterBox_lowerSubPanel"></div>
+        <div class="ChatterBox_lowerSubPanel" style="padding: 1vh 1vw;">
+            <form asp-controller="Categories" asp-action="New" method="post">
 
-    <button class="btn ChatterBox_btn_dark" style="font-size:20px;" type="submit">Done</button>
+                <h3>Create a new category!</h3>
 
-</form>
+                <br />
+
+                @Html.Label("Title", "Title: ")
+                @Html.TextBox("Title")
+                @Html.ValidationMessage("Title")
+
+                <br />
+                <br />
+
+                <div class="flex-column">
+                    <button class="btn btn-dark ChatterBox_btn_light" style="font-size:20px; margin-right: 1vw;" type="submit">Done</button>
+                    <button class="btn btn-danger ChatterBox_btn_del" asp-controller="Categories" asp-action="List">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

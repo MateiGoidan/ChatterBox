@@ -3,6 +3,7 @@ using ChatterBox.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
 
@@ -23,11 +24,56 @@ namespace ChatterBox.Controllers
 
 		public IActionResult List()
 		{
-			ViewBag.Categories = MyDataBase.Categories;
+			var categories = MyDataBase.Categories.Include("Channels");
 
 			if (TempData.ContainsKey("Message"))
 			{
 				ViewBag.TempMsg = TempData["Message"];
+			}
+
+			// Search Engine
+
+			var search = "";
+
+			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["search"])))
+			{
+				search = Convert.ToString(HttpContext.Request.Query["search"]).Trim(); // Remove spaces 
+
+				List<int> categoriesIds = MyDataBase.Categories
+					.Where(a => a.Title != null && a.Title.Contains(search))
+					.Select(a => a.Id)
+					.ToList();
+
+				categories = MyDataBase.Categories.Where(a => categoriesIds.Contains(a.Id));
+			}
+
+			ViewBag.SearchString = search;
+
+			// Pagination
+
+			int numbPerPage = 9;
+			int totalNumb = categories.Count();
+
+			var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+
+			var offset = 0;
+			if (!currentPage.Equals(0))
+			{
+				offset = (currentPage - 1) * numbPerPage;
+			}
+
+			var paginatedCategories = categories.Skip(offset).Take(numbPerPage);
+
+			ViewBag.lastPage = Math.Ceiling((float)totalNumb / (float)numbPerPage);
+			ViewBag.Categories = paginatedCategories;
+
+			if (search != "")
+			{
+				ViewBag.PaginationBaseUrl = "/Categories/List/?search=" + search + "&page";
+			}
+			else
+			{
+				ViewBag.PaginationBaseUrl = "/Categories/List/?page";
 			}
 
 			return View();
@@ -80,6 +126,8 @@ namespace ChatterBox.Controllers
 			_Category.Id = _Id;
 
 			Category? _OriginalCategory = MyDataBase.Categories.Find(_Id);
+
+			ViewBag.CategoryTitle = _OriginalCategory.Title;
 
 			if (_OriginalCategory == null)
 			{

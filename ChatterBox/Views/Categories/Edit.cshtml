@@ -1,19 +1,42 @@
 @using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
 
 @model Category
 
-<h2>Editare categorie</h2>
+<div class="ChatterBox_sitecard">
 
-<form method="post" action="/Categories/Edit/@Model.Id">
+    @Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
 
-    @Html.Label("Title", "Title: ")
-    @Html.Editor("Title")
-    @Html.ValidationMessage("Title")
+    <div class="ChatterBox_rightPanel">
+        <div class="ChatterBox_upperSubPanel">
+            <h1>Channels</h1>
+            <a class="bi bi-plus-lg ChatterBox_btn_icon" href="/Channels/New"></a>
+        </div>
+        <div class="ChatterBox_upperSubPanel">
+            <h1>Edit @Model.Title</h1>
+        </div>
+        <div class="ChatterBox_lowerSubPanel"></div>
+        <div class="ChatterBox_lowerSubPanel" style="padding: 1vh 1vw;">
+            <form asp-controller="Categories" asp-action="Edit" asp-route-_Id="@Model.Id" method="post">
 
-    <br />
-    <br />
+                <h3>Change the title of the category!</h3>
 
-    <button class="btn ChatterBox_btn_dark" style="font-size:20px;" type="submit">Done</button>
-</form>
+                <br />
 
+                @Html.Label("Title", "Title: ")
+                @Html.Editor("Title")
+                @Html.ValidationMessage("Title")
 
+                <br />
+                <br />
+
+                <div class="flex-column">
+                    <button class="btn btn-dark ChatterBox_btn_light" style="margin-right: 1vw;" type="submit">Done</button>
+                    <button class="btn btn-danger" asp-controller="Categories" asp-action="List">Cancel</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

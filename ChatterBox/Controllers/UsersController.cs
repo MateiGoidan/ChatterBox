@@ -20,9 +20,9 @@ namespace ChatterBox.Controllers
 		}
 
 		[Authorize(Roles = "User, Admin")]
-		public IActionResult Show(string id)
+		public IActionResult Show(string _Id)
 		{
-			ApplicationUser user = MyDataBase.Users.Find(id);
+			ApplicationUser user = MyDataBase.Users.Find(_Id);
 
 			try
 			{
@@ -46,11 +46,12 @@ namespace ChatterBox.Controllers
 
 			return View();
 		}
+
 		[Authorize(Roles = "User, Admin")]
 		[HttpPost]
-		public IActionResult Delete(string _ID)
+		public IActionResult Delete(string _Id)
 		{
-			ApplicationUser? _DeleteUser = MyDataBase.AppUsers.Find(_ID);
+			ApplicationUser? _DeleteUser = MyDataBase.AppUsers.Find(_Id);
 
 			string _RedirectAction = "List";
 
@@ -77,9 +78,9 @@ namespace ChatterBox.Controllers
 
 		[Authorize(Roles = "Admin")]
 		[HttpPost]
-		public async Task<IActionResult> Promote(string _ID)
+		public async Task<IActionResult> Promote(string _Id)
 		{
-			var _User = await MyUserManager.FindByIdAsync(_ID);
+			var _User = await MyUserManager.FindByIdAsync(_Id);
 
 			var _OldRole = await MyUserManager.GetRolesAsync(_User);
 
@@ -117,9 +118,9 @@ namespace ChatterBox.Controllers
 
 		[Authorize(Roles = "Admin")]
 		[HttpPost]
-		public async Task<IActionResult> Demote(string _ID)
+		public async Task<IActionResult> Demote(string _Id)
 		{
-			var _User = await MyUserManager.FindByIdAsync(_ID);
+			var _User = await MyUserManager.FindByIdAsync(_Id);
 
 			var _OldRole = await MyUserManager.GetRolesAsync(_User);
 

@@ -11,33 +11,58 @@
     <div class="ChatterBox_rightPanel">
         <div class="ChatterBox_upperSubPanel">
             <h1>Channels</h1>
-            <div class="bi bi-plus-lg ChatterBox_btn_light"></div>
+            <a class="bi bi-plus-lg ChatterBox_btn_icon" href="/Channels/New"></a>
         </div>
         <div class="ChatterBox_upperSubPanel">
             <h1>Categories List</h1>
-            <a class="bi bi-plus-lg ChatterBox_btn_light" href="/Categories/New"></a>
+            <a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Categories" asp-action="New"></a>
         </div>
         <div class="ChatterBox_lowerSubPanel"></div>
-        <div class="ChatterBox_lowerSubPanel" style="padding: 1rem">
-            @if (ViewBag.TempMsg != null)
-            {
-                <h2 class="alert-success p-3 rounded-3 text-center mb-5">@ViewBag.TempMsg</h2>
-            }
-
-            @foreach (Category _Elem in ViewBag.Categories)
-            {
-                <div class="card m-3 p-4" style="background: #24344d;">
-                    <h2 class="mb-0" style="color: white">@_Elem.Title</h2>
-                    <hr style="color: white">
-                    <div class="d-flex justify-content-start">
-                        <a class="btn ChatterBox_btn_dark" style="font-size: 15px;" href="/Categories/Edit/@_Elem.Id">Edit</a>
-                        <form action="/Categories/Delete/@_Elem.Id" method="post">
-                            <button class="btn ChatterBox_btn_del" style="font-size: 15px" type="submit">Delete</button>
-                        </form>
+        <div class="ChatterBox_lowerSubPanel">
+            <div style="padding: 1vh 1vw 0 1vw;">
+                <form method="GET">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search categories" name="search"
+                               value="@ViewBag.SearchString">
+                        <button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
                     </div>
-                </div>
-            }
+                </form>
+            </div>
 
+            <div class="ChatterBox_categories">
+                @if (ViewBag.TempMsg != null)
+                {
+                    <h2 class="alert-success p-3 rounded-3 text-center mb-5">@ViewBag.TempMsg</h2>
+                }
+
+                @foreach (Category _Elem in ViewBag.Categories)
+                {
+                    @Html.Partial("CategoryCard", _Elem)
+                }
+            </div>
+
+            <div style="justify-items: center;">
+                <nav aria-label="Categories navigation">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <a class="btn-dark page-link" href="@ViewBag.PaginationBaseUrl=1" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= ViewBag.lastPage; i++)
+                        {
+                            <li class=" page-item"> <a class="btn-dark page-link" href="@ViewBag.PaginationBaseUrl=@i">@(i)</a> </li>
+                        }
+
+                        <li class="page-item">
+                            <a class="btn-dark page-link" href="@ViewBag.PaginationBaseUrl=@(ViewBag.lastPage)" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 </div>

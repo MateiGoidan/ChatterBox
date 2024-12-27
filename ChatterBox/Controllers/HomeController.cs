@@ -27,7 +27,7 @@ namespace ChatterBox.Controllers
 			}
 			else
 			{
-				return RedirectToAction("Show", "Users", new { id = MyUserManager.GetUserId(User) });
+				return RedirectToAction("Show", "Users", new { _Id = MyUserManager.GetUserId(User) });
 			}
 		}
 
