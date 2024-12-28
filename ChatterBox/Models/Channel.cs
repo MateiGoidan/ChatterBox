@@ -18,7 +18,7 @@ namespace ChatterBox.Models
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "Channels are required to have a category!")]
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
         public virtual Category? Category { get; set; }
 

@@ -14,6 +14,7 @@ namespace ChatterBox.Controllers
 		private readonly ApplicationDbContext MyDataBase;
 		private readonly UserManager<ApplicationUser> MyUserManager;
 		private readonly RoleManager<IdentityRole> MyRoleManager;
+
 		public ChannelsController(ApplicationDbContext _MyDataBase, UserManager<ApplicationUser> _MyUserManager, RoleManager<IdentityRole> _MyRoleManager)
 		{
 			MyDataBase = _MyDataBase;
@@ -21,8 +22,42 @@ namespace ChatterBox.Controllers
 			MyRoleManager = _MyRoleManager;
 		}
 
-		[Authorize(Roles = "User,Moderator,Admin")]
-		public IActionResult Show(int _Id, string? _Search)
+		[NonAction]
+		public void GetChannels()
+		{
+			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
+				.Where(b => b.UserId == MyUserManager.GetUserId(User))
+				.ToList();
+
+			List<int> _ChannelsIds = new List<int>();
+			foreach (BindChannelUser _Bind in _BindChannelUser)
+			{
+				_ChannelsIds.Add(_Bind.ChannelId);
+			}
+
+			string _Search = "";
+
+			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["search"])))
+			{
+				_Search = Convert.ToString(Request.Query["Search"]);
+
+				_ChannelsIds = MyDataBase.Channels
+					.Where(c => c.Name.ToUpper().Contains(_Search.ToUpper()) || c.Description.ToUpper().Contains(_Search.ToUpper()))
+					.Select(c => c.Id)
+					.ToList();
+			}
+
+			var _Channels = MyDataBase.Channels
+				.Where(c => _ChannelsIds.Contains(c.Id))
+				.ToList();
+
+			ViewBag.SearchString = _Search;
+
+			ViewBag.UserChannels = _Channels;
+		}
+
+		[Authorize(Roles = "User,Admin")]
+		public IActionResult Show(int _Id)
 		{
 			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser").Include("Messages").Include("Messages.User").Where(m => m.Id == _Id).First();
 
@@ -31,87 +66,56 @@ namespace ChatterBox.Controllers
 				return View("Error", new ErrorViewModel { RequestId = "Could not find the channel!" });
 			}
 
-			if (!User.IsInRole("Admin"))
+			bool _Found = false;
+
+			foreach (BindChannelUser _Bind in _Channel.BindChannelUser)
 			{
-				bool _Found = false;
-
-				foreach (BindChannelUser _Bind in _Channel.BindChannelUser)
+				if (_Bind.UserId == MyUserManager.GetUserId(User))
 				{
-					if (_Bind.UserId == MyUserManager.GetUserId(User))
-					{
-						_Found = true;
-						break;
-					}
-				}
-
-				if (!_Found)
-				{
-					return View("Error", new ErrorViewModel { RequestId = "Access denied!" });
+					_Found = true;
+					break;
 				}
 			}
 
-			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
-				.Where(_BindChannelUser => _BindChannelUser.UserId == MyUserManager.GetUserId(User))
-				.ToList();
-
-			List<int> _ChannelIds = new List<int>();
-			foreach (BindChannelUser _Bind in _BindChannelUser)
+			if (!_Found)
 			{
-				_ChannelIds.Add(_Bind.ChannelId);
+				return View("Error", new ErrorViewModel { RequestId = "Access denied!" });
 			}
 
-			if (_Search == null && User.IsInRole("Admin"))
-			{
-				ViewBag.UserChannels = MyDataBase.Channels;
-			}
-			else if (_Search == null)
-			{
-				ViewBag.UserChannels = MyDataBase.Channels
-					.Where(_Channel => _ChannelIds.Contains(_Channel.Id))
-					.ToList();
-			}
-			else
-			{
-				ViewBag.UserChannels = MyDataBase.Channels
-					.Where(_Channel => _ChannelIds.Contains(_Channel.Id))
-					.Where(_Channel => _Channel.Name.ToUpper().Contains(_Search.ToUpper()))
-					.ToList();
-			}
+			GetChannels();
 
 			ViewBag.ChatMessages = _Channel.Messages.ToList().OrderBy(m => m.Date);
 
 			return View(_Channel);
 		}
 
-		[Authorize(Roles = "User,Moderator,Admin")]
-		public IActionResult Display(int _ID, string? _Search)
+		[Authorize(Roles = "User,Admin")]
+		public IActionResult Display(int _Id)
 		{
-			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser").Include("Category").Where(m => m.Id == _ID).First();
+			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser").Include("Category").Where(m => m.Id == _Id).First();
 
 			if (_Channel == null || _Channel.BindChannelUser == null || _Channel.Category == null)
 			{
 				return View("Error", new ErrorViewModel { RequestId = "Could not find the channel!" });
 			}
 
-			if (!User.IsInRole("Admin"))
+			bool _Found = false;
+
+			foreach (BindChannelUser _Bind in _Channel.BindChannelUser)
 			{
-				bool _Found = false;
-
-				foreach (BindChannelUser _Bind in _Channel.BindChannelUser)
+				if (_Bind.UserId == MyUserManager.GetUserId(User))
 				{
-					if (_Bind.UserId == MyUserManager.GetUserId(User))
-					{
-						_Found = true;
-						break;
-					}
-				}
-
-				if (!_Found)
-				{
-					return View("Error", new ErrorViewModel { RequestId = "Access denied!" });
+					_Found = true;
+					break;
 				}
 			}
 
+			if (!_Found)
+			{
+				return View("Error", new ErrorViewModel { RequestId = "Access denied!" });
+			}
+
+			// TODO
 			foreach (BindChannelUser _Bind in _Channel.BindChannelUser)
 			{
 				if (_Bind.Role == "Admin")
@@ -121,33 +125,7 @@ namespace ChatterBox.Controllers
 				}
 			}
 
-			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
-				.Where(_BindChannelUser => _BindChannelUser.UserId == MyUserManager.GetUserId(User))
-				.ToList();
-
-			List<int> _ChannelIds = new List<int>();
-			foreach (BindChannelUser _Bind in _BindChannelUser)
-			{
-				_ChannelIds.Add(_Bind.ChannelId);
-			}
-
-			if (_Search == null && User.IsInRole("Admin"))
-			{
-				ViewBag.UserChannels = MyDataBase.Channels;
-			}
-			else if (_Search == null)
-			{
-				ViewBag.UserChannels = MyDataBase.Channels
-					.Where(_Channel => _ChannelIds.Contains(_Channel.Id))
-					.ToList();
-			}
-			else
-			{
-				ViewBag.UserChannels = MyDataBase.Channels
-					.Where(_Channel => _ChannelIds.Contains(_Channel.Id))
-					.Where(_Channel => _Channel.Name.ToUpper().Contains(_Search.ToUpper()))
-					.ToList();
-			}
+			GetChannels();
 
 			List<ApplicationUser> _AllMembers = new List<ApplicationUser>();
 
@@ -168,16 +146,18 @@ namespace ChatterBox.Controllers
 			return View(_Channel);
 		}
 
-		[Authorize(Roles = "User,Moderator,Admin")]
+		[Authorize(Roles = "User,Admin")]
 		public IActionResult New()
 		{
+			GetChannels();
+
 			ViewBag.CategoriesList = GetAllCategories();
 
 			return View();
 		}
 
 		[HttpPost]
-		[Authorize(Roles = "User,Moderator,Admin")]
+		[Authorize(Roles = "User,Admin")]
 		public IActionResult New(Channel _Channel)
 		{
 			if (!ModelState.IsValid)
@@ -205,7 +185,7 @@ namespace ChatterBox.Controllers
 			}
 		}
 
-		[Authorize(Roles = "User,Moderator,Admin")]
+		[Authorize(Roles = "User,Admin")]
 		public IActionResult Edit(int _Id)
 		{
 			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser").Where(m => m.Id == _Id).First();
@@ -253,7 +233,7 @@ namespace ChatterBox.Controllers
 		}
 
 		[HttpPost]
-		[Authorize(Roles = "User,Moderator,Admin")]
+		[Authorize(Roles = "User,Admin")]
 		public IActionResult Edit(int _ID, Channel _Channel)
 		{
 			_Channel.Id = _ID;
@@ -321,7 +301,7 @@ namespace ChatterBox.Controllers
 		}
 
 		[HttpPost]
-		[Authorize(Roles = "User,Moderator,Admin")]
+		[Authorize(Roles = "User,Admin")]
 		public IActionResult Delete(int _ID)
 		{
 			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser").Where(m => m.Id == _ID).First();

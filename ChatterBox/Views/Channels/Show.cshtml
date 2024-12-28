@@ -1,18 +1,39 @@
-<h2>Afisare canal</h2>
-<br />
+@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
 
-<p>@ViewBag.Channel.Title</p>
-<p>@ViewBag.Channel.Content</p>
-<p>@ViewBag.Channel.Date</p>
+@model Channel
 
-<br />
+<div class="ChatterBox_sitecard">
 
-<form method="post" action="/Channels/Delete/@ViewBag.Channel.Id">
+    @Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
 
-    <button type="submit" class="btn btn-danger">Sterge canalul</button>
+    <div class="ChatterBox_rightPanel">
+        <div class="ChatterBox_upperSubPanel">
+            <h1>Channels</h1>
+            <a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
+        </div>
+        <div class="ChatterBox_upperSubPanel">
+            <h1>@Model.Name</h1>
+            <a class="bi bi-three-dots-vertical ChatterBox_btn_icon"></a>
+        </div>
+        <div class="ChatterBox_lowerSubPanel"> 
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search Channels" name="search"
+                           value="@ViewBag.SearchString">
+                    <button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+                </div>
+            </form>
 
-</form>
+            <br />
 
-<br />
-
-<a href="/Channels/Index" class="btn btn-success">Afisare canale</a>
+			@foreach(ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
+			{
+				@Html.Partial("ChannelCard", _Channel)
+			}
+        </div>
+        <div class="ChatterBox_lowerSubPanel">
+        </div>
+    </div>
+</div>

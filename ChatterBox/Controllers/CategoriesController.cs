@@ -22,8 +22,44 @@ namespace ChatterBox.Controllers
 			MyRoleManager = _MyRoleManager;
 		}
 
+		[NonAction]
+		public void GetChannels()
+		{
+			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
+				.Where(b => b.UserId == MyUserManager.GetUserId(User))
+				.ToList();
+
+			List<int> _ChannelsIds = new List<int>();
+			foreach (BindChannelUser _Bind in _BindChannelUser)
+			{
+				_ChannelsIds.Add(_Bind.ChannelId);
+			}
+
+			string _Search = "";
+
+			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["search"])))
+			{
+				_Search = Convert.ToString(Request.Query["Search"]);
+
+				_ChannelsIds = MyDataBase.Channels
+					.Where(c => c.Name.ToUpper().Contains(_Search.ToUpper()) || c.Description.ToUpper().Contains(_Search.ToUpper()))
+					.Select(c => c.Id)
+					.ToList();
+			}
+
+			var _Channels = MyDataBase.Channels
+				.Where(c => _ChannelsIds.Contains(c.Id))
+				.ToList();
+
+			ViewBag.SearchString = _Search;
+
+			ViewBag.UserChannels = _Channels;
+		}
+
 		public IActionResult List()
 		{
+			GetChannels();
+
 			var categories = MyDataBase.Categories.Include("Channels");
 
 			if (TempData.ContainsKey("Message"))
@@ -81,6 +117,8 @@ namespace ChatterBox.Controllers
 
 		public IActionResult New()
 		{
+			GetChannels();
+
 			return View();
 		}
 
@@ -110,6 +148,8 @@ namespace ChatterBox.Controllers
 
 		public IActionResult Edit(int _Id)
 		{
+			GetChannels();
+
 			try
 			{
 				return View(MyDataBase.Categories.Find(_Id));

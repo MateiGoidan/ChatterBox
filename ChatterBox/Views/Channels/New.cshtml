@@ -4,36 +4,75 @@
 
 @model Channel
 
-<h2>Formular adaugare canal</h2>
+@{
+    ApplicationUser applicationUser = MyUserManager.GetUserAsync(User).Result;
+}
 
-<form method="post" action="/Channels/New">
+<div class="ChatterBox_sitecard">
 
-    <label>Titlu canal</label>
+	@Html.Partial("SideBar", applicationUser)
 
-    @Html.Label("Name", "Name: ")
-    <br />
-    @Html.TextBox("Name")
-    @Html.ValidationMessageFor(c => c.Name, "", new { @class = "text-danger" })
+	<div class="ChatterBox_rightPanel">
+		<div class="ChatterBox_upperSubPanel">
+			<h1>Channels</h1>
+			<a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
+		</div>
+		<div class="ChatterBox_upperSubPanel">
+			<h1>New Channel</h1>
+		</div>
+		<div class="ChatterBox_lowerSubPanel">
+			<form method="get">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search Channels" name="search" value="@ViewBag.SearchString"/>
+                    <button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+				</div>
+			</form>
 
-    <br />
-    <br />
+			<br />
 
-    @Html.Label("Description", "Description: ")
-    <br />
-    @Html.TextArea("Description")
-    @Html.ValidationMessage("Description", null, new { @class = "text-danger" })
+			@foreach(ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
+			{
+				@Html.Partial("ChannelCard", _Channel)
+			}
+		</div>
+		<div class="ChatterBox_lowerSubPanel">
+			<form asp-controller="Channels" asp-action="New" method="post">
 
-    <br />
-    <br />
+				<h3>Create a new channel!</h3>
 
-    @Html.Label("CategoryId", "Category: ")
-    <br />
-    @Html.DropDownListFor(m => m.CategoryId, new SelectList(ViewBag.CategoriesList, "Value", "Text"), "Select category", new { @class = "form-control" })
-    @Html.ValidationMessage("CategoryId", null, new { @class = "text-danger" })
+				<br />
 
-    <br />
-    <br />
+				<div class="form-group">
+					@Html.Label("Name", "Name: ")
+					@Html.Editor("Name")
+					<br />
+					@Html.ValidationMessageFor(c => c.Name, "", new { @class = "text-danger" })
+				</div>
 
-    <button class="btn BMCA_btn" style="font-size:20px;" type="submit">Done</button>
+				<br />
 
-</form>
+				<div class="form-group">
+					@Html.Label("Description", "Description: ")
+					<br />
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+					@Html.ValidationMessage("Description", null, new { @class = "text-danger" })
+				</div>
+
+				<br />
+
+				<div class="form-group">
+					@Html.Label("CategoryId", "Select Category: ")
+					@Html.DropDownListFor(c => c.CategoryId, new SelectList(ViewBag.CategoriesList, "Value", "Text"), "None", new { @class = "form-control" })
+					@Html.ValidationMessage("CategoryId", null, new { @class = "text-danger" })
+				</div>
+
+				<br />
+
+				<div class="flex-column">
+					<button class="btn btn-dark ChatterBox_btn_light" style="font-size:20px; margin-right: 1vw;" type="submit">Done</button>
+					<button class="btn btn-danger ChatterBox_btn_del" asp-controller="Users" asp-action="Show" asp-route-_Id="@applicationUser.Id">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

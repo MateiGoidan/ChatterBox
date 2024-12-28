@@ -5,40 +5,61 @@
 @model ApplicationUser
 
 @{
-    string _UserName = Model.UserName;
-    _UserName = _UserName.Split("@")[0];
-    _UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
+	string _UserName = Model.UserName;
+	_UserName = _UserName.Split("@")[0];
+	_UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
 }
 
 <div class="ChatterBox_sitecard">
 
-    @Html.Partial("SideBar", Model)
+	@Html.Partial("SideBar", Model)
 
-    <div class="ChatterBox_rightPanel">
-        <div class="ChatterBox_upperSubPanel">
-            <h1>Channels</h1>
-            <a class="bi bi-plus-lg ChatterBox_btn_icon" href="/Channels/New"></a>
-        </div>
-        <div class="ChatterBox_upperSubPanel">
-            <h1>User Information</h1>
-            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { AreaAttribute = "" })">
-                <button type="submit" class="bi bi-box-arrow-right ChatterBox_btn_icon"></button>
-            </form>
-        </div>
-        <div class="ChatterBox_lowerSubPanel"></div>
-        <div class="ChatterBox_lowerSubPanel" style="padding: 1rem">
-            <h2>About</h2>
-            <hr />
-            <p><strong>Username:</strong> <span>@_UserName</span></p>
-            <p><strong>Email:</strong> <span>@Model.Email</span></p>
-            @if (User.IsInRole("Admin"))
-            {
-                <p><strong>Role:</strong> Admin</p>
-            }
-            else 
-            {
-                <p><strong>Role:</strong> User</p>
-            }
-        </div>
-    </div>
+	<div class="ChatterBox_rightPanel">
+		<div class="ChatterBox_upperSubPanel">
+			<h1>Channels</h1>
+			<a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
+		</div>
+		<div class="ChatterBox_upperSubPanel">
+			<h1>User Information</h1>
+
+			<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { AreaAttribute = "" })">
+				<button type="submit" class="bi bi-box-arrow-right ChatterBox_btn_icon"></button>
+			</form>
+		</div>
+		<div class="ChatterBox_lowerSubPanel">
+			<form method="GET">
+				<div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search Channels" name="search"
+                           value="@ViewBag.SearchString">
+                    <button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+                </div>
+			</form>
+
+            <br />
+
+			@foreach(ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
+			{
+                @Html.Partial("ChannelCard", _Channel)
+			}
+		</div>
+		<div class="ChatterBox_lowerSubPanel">
+			<h2>About</h2>
+
+			<hr />
+
+			<p><strong>Username:</strong> <span>@_UserName</span></p>
+
+			<p><strong>Email:</strong> <span>@Model.Email</span></p>
+
+			@if (User.IsInRole("Admin"))
+			{
+				<p><strong>Role:</strong> Admin</p>
+			}
+			else 
+			{
+				<p><strong>Role:</strong> User</p>
+			}
+
+		</div>
+	</div>
 </div>
