@@ -29,17 +29,17 @@
 		<div class="ChatterBox_lowerSubPanel">
 			<form method="GET">
 				<div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search Channels" name="search"
-                           value="@ViewBag.SearchString">
-                    <button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
-                </div>
+					<input type="text" class="form-control" placeholder="Search Channels" name="search"
+						   value="@ViewBag.SearchString">
+					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+				</div>
 			</form>
 
-            <br />
+			<br />
 
-			@foreach(ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
+			@foreach (ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
 			{
-                @Html.Partial("ChannelCard", _Channel)
+				<partial name="ChannelBox" model="_Channel" />
 			}
 		</div>
 		<div class="ChatterBox_lowerSubPanel">
@@ -55,7 +55,7 @@
 			{
 				<p><strong>Role:</strong> Admin</p>
 			}
-			else 
+			else
 			{
 				<p><strong>Role:</strong> User</p>
 			}

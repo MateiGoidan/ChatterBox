@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace ChatterBox.Controllers
 {
@@ -23,7 +22,7 @@ namespace ChatterBox.Controllers
 		}
 
 		[NonAction]
-		public void GetChannels()
+		public void GetUserChannels()
 		{
 			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
 				.Where(b => b.UserId == MyUserManager.GetUserId(User))
@@ -47,13 +46,33 @@ namespace ChatterBox.Controllers
 					.ToList();
 			}
 
-			var _Channels = MyDataBase.Channels
+			List<Channel> _Channels = MyDataBase.Channels
 				.Where(c => _ChannelsIds.Contains(c.Id))
 				.ToList();
 
 			ViewBag.SearchString = _Search;
 
 			ViewBag.UserChannels = _Channels;
+		}
+
+		[Authorize(Roles = "User,Admin")]
+		public IActionResult List()
+		{
+			GetUserChannels();
+
+			ViewBag.Channels = MyDataBase.Channels.Include("Category").ToList();
+
+			ViewBag.Admin = MyDataBase.BindChannelUserEntries
+				.Where(b => b.Role == "Admin")
+				.Select(b => b.UserId)
+				.First();
+
+			if (TempData.ContainsKey("Message"))
+			{
+				ViewBag.TempMsg = TempData["Message"];
+			}
+
+			return View();
 		}
 
 		[Authorize(Roles = "User,Admin")]
@@ -82,7 +101,7 @@ namespace ChatterBox.Controllers
 				return View("Error", new ErrorViewModel { RequestId = "Access denied!" });
 			}
 
-			GetChannels();
+			GetUserChannels();
 
 			ViewBag.ChatMessages = _Channel.Messages.ToList().OrderBy(m => m.Date);
 
@@ -115,19 +134,9 @@ namespace ChatterBox.Controllers
 				return View("Error", new ErrorViewModel { RequestId = "Access denied!" });
 			}
 
-			// TODO
-			foreach (BindChannelUser _Bind in _Channel.BindChannelUser)
-			{
-				if (_Bind.Role == "Admin")
-				{
-					ViewBag.Owner = _Bind.UserId;
-					break;
-				}
-			}
+			GetUserChannels();
 
-			GetChannels();
-
-			List<ApplicationUser> _AllMembers = new List<ApplicationUser>();
+			List<BindChannelUser> _AllBinds = new List<BindChannelUser>();
 
 			foreach (BindChannelUser _Bind in _Channel.BindChannelUser)
 			{
@@ -138,10 +147,10 @@ namespace ChatterBox.Controllers
 					continue;
 				}
 
-				_AllMembers.Add(_Member);
+				_AllBinds .Add(_Bind);
 			}
 
-			ViewBag.AllMembers = _AllMembers;
+			ViewBag.AllBinds = _AllBinds;
 
 			return View(_Channel);
 		}
@@ -149,7 +158,7 @@ namespace ChatterBox.Controllers
 		[Authorize(Roles = "User,Admin")]
 		public IActionResult New()
 		{
-			GetChannels();
+			GetUserChannels();
 
 			ViewBag.CategoriesList = GetAllCategories();
 
@@ -184,6 +193,25 @@ namespace ChatterBox.Controllers
 				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to create a new channel. Please contact the dev team in order to resolve this issue." });
 			}
 		}
+
+		//[Authorize(Roles = "User,Admin")]
+		//[HttpPost]
+		//public IActionResult Join()
+		//{
+		//	if (!ModelState.IsValid)
+		//	{
+		//		return Redirect("List");
+		//	}
+
+		//	try
+		//	{
+
+		//	}
+		//	catch
+		//	{
+		//		return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to join the channel. Please contact the dev team in order to resolve this issue." });
+		//	}
+		//}
 
 		[Authorize(Roles = "User,Admin")]
 		public IActionResult Edit(int _Id)

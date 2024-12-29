@@ -73,9 +73,9 @@ namespace ChatterBox.Controllers
 		[Authorize(Roles = "Admin")]
 		public IActionResult List()
 		{
-			ViewBag.Users = MyUserManager.Users.ToList();
-
 			GetChannels();
+
+			ViewBag.Users = MyUserManager.Users.ToList();
 
 			if (TempData.ContainsKey("Message"))
 			{

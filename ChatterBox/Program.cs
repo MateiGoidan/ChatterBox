@@ -66,7 +66,9 @@ app.MapControllerRoute(name: "CategoriesNew", pattern: "Categories/New", default
 app.MapControllerRoute(name: "CategoriesEdit", pattern: "Categories/Edit/{_Id}", defaults: new { controller = "Categories", action = "Edit" });
 app.MapControllerRoute(name: "CategoriesDelete", pattern: "Categories/Delete/{_Id}", defaults: new { controller = "Categories", action = "Delete" });
 
+app.MapControllerRoute(name: "ChannelsList", pattern: "Channels/List", defaults: new { controller = "Channels", action = "List" });
 app.MapControllerRoute(name: "ChannelsShow", pattern: "Channels/Show/{_Id}", defaults: new { controller = "Channels", action = "Show" });
+app.MapControllerRoute(name: "ChannelsDisplay", pattern: "Channels/Info/{_Id}", defaults: new { controller = "Channels", action = "Display" });
 app.MapControllerRoute(name: "ChannelsNew", pattern: "Channels/New", defaults: new { controller = "Channels", action = "New" });
 
 app.MapRazorPages();

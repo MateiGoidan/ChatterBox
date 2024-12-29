@@ -1,43 +1,62 @@
 ﻿@using ChatterBox.Models
 @using Microsoft.AspNetCore.Identity
-
 @inject UserManager<ApplicationUser> MyUserManager
 
-@{
-    ApplicationUser _User = MyUserManager.GetUserAsync(User).Result;
-    string _UserName = _User.UserName;
-    _UserName = _UserName.Split("@")[0];
-    _UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
-}
+@model Channel
 
 <div class="ChatterBox_sitecard">
-    <div class="ChatterBox_leftPanel">
-        <div class="ChatterBox_leftSubPanel">
-            <a class="bi bi-person-circle" style="color: white; font-size: 80px;" href="/Users/Show/@_User.Id"></a>
-            <h2 style="color:white">@_UserName</h2>
-            <h4 style="color: #4c5c75">@_User.Id</h4>
-        </div>
-        <div class="ChatterBox_leftSubPanel" style="align-items: start; margin-left: 2vh;">
-            <div class="bi bi-envelope" style="color: white; font-size: 18px;"> Inbox</div>
-            <div class="bi bi-wechat" style="color: white; font-size: 18px;"> Join Chats</div>
-            <br />
-            @if (User.IsInRole("Admin"))
-            {
-                <div class="bi bi-people-fill" style="color: white; font-size: 18px;">Categories</div>
-                <div class="bi bi-grid" style="color: white; font-size: 18px;">Users</div>
-            }
-        </div>
-        <div class="ChatterBox_leftSubPanel">
-            <div class="bi bi-globe-europe-africa" style="color: white; font-size: 18px;"></div>
-        </div>
-    </div>
+
+    @Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
+
     <div class="ChatterBox_rightPanel">
         <div class="ChatterBox_upperSubPanel">
             <h1>Channels</h1>
-            <div class="bi bi-plus-lg ChatterBox_btn_light"></div>
+            <a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
         </div>
-        <div class="ChatterBox_upperSubPanel"> Chat </div>
-        <div class="ChatterBox_lowerSubPanel"> List of channels </div>
-        <div class="ChatterBox_lowerSubPanel"> Messages </div>
+        <div class="ChatterBox_upperSubPanel">
+            <h1>@Model.Name</h1>
+            <a class="bi bi-arrow-return-left ChatterBox_btn_icon" asp-controller="Channels" asp-action="Show" asp-route-_Id="@Model.Id"></a>
+        </div>
+        <div class="ChatterBox_lowerSubPanel"> 
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search Channels" name="search"
+                    value="@ViewBag.SearchString">
+                    <button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+                </div>
+            </form>
+
+            <br />
+
+            @foreach(ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
+            {
+                @Html.Partial("ChannelBox", _Channel)
+            }
+        </div>
+        <div class="ChatterBox_lowerSubPanel">
+            <h2>Info</h2>
+
+            <hr />
+
+            <p><strong>Name:</strong> <span>@Model.Name</span></p>
+
+            <p><strong>Category:</strong> <span>@Model.Category.Title</span></p>
+
+            <p><strong>Description:</strong> <span>@Model.Description</span></p>
+
+            <br />
+
+            <h2>Members</h2>
+
+            <hr />
+
+            @foreach(ChatterBox.Models.BindChannelUser _Bind in ViewBag.AllBinds)
+            {
+                <div class="card">
+                    <p><span>@_Bind.User.UserName</span></p>
+                    <p><span>Role: @_Bind.Role</span></p>
+                </div>
+            }
+        </div>
     </div>
 </div>

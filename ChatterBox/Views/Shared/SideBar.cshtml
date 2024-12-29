@@ -20,7 +20,7 @@
     <div class="ChatterBox_leftSubPanel" style="align-items: start; padding: 2vh;">
         <a class="bi bi-person-fill ChatterBox_link" asp-controller="Users" asp-action="Show" asp-route-_Id="@Model.Id"> Account </a>
         <div class="bi bi-envelope-fill ChatterBox_link"> Inbox </div>
-        <div class="bi bi-wechat ChatterBox_link"> Join Chats </div>
+        <a class="bi bi-wechat ChatterBox_link" asp-controller="Channels" asp-action="List"> Join Chats </a>
         <br />
         @if (User.IsInRole("Admin"))
         {
