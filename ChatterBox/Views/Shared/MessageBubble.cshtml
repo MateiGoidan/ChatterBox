@@ -1,0 +1,119 @@
+﻿@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
+
+@model Message
+
+@{
+    string _UserName = Model.User.UserName;
+    _UserName = _UserName.Split("@")[0];
+    _UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
+
+    BindChannelUser _Bind = Model.Channel.BindChannelUser
+                            .Where(b => b.UserId == Model.UserId).First();
+    string _ChatRole = _Bind.Role;
+
+    string _Time = "";
+    DateTime _Date = Model.Date;
+    if(_Date.Date == DateTime.Today) {
+        _Time = _Date.ToString("HH:mm");
+    }
+    else {
+        _Time = _Date.ToString("M");
+    }
+}
+
+@if (Model.UserId == MyUserManager.GetUserId(User))
+{
+    <div class="ms-auto mb-1 me-1" style="background: #caecf3; border-radius: 0.2rem; padding: 0.5rem;">
+        <div style="text-align: right;">
+            @if (_ChatRole == "Admin")
+            {
+                <small class="mr-1" style="border:1px solid; border-radius: 0.2rem; padding: 2px; color: limegreen">Admin</small>
+            }
+            else if (_ChatRole == "Moderator")
+            {
+                <small class="mr-1" style="border:1px solid; border-radius: 0.2rem; padding: 2px; color: red">Mod</small>
+            }
+            <a class="ChatterBox_link" style="color: black" asp-controller="Users" asp-action="Show" asp-route-_Id="@Model.UserId">
+                @_UserName
+            </a>
+            <a class="bi bi-three-dots-vertical ChatterBox_link" style="color: black" data-bs-toggle="collapse" href="@($"#collapseForm{@Model.Id}")" role="button" aria-expanded="false" aria-controls="@($"collapseForm{@Model.Id}")"></a>
+            <div class="collapse" id="@($"collapseForm{@Model.Id}")" style="margin: 0.3rem 0 0.5rem 0">
+                <div class="d-flex" style="justify-content: right">
+                    <form asp-controller="Messages" asp-action="Edit" asp-route-_Id="@Model.Id" method="get">
+                        <button class="btn btn-dark ChatterBox_btn_light" style="font-size: 15px; margin-right: 0.5rem" type="submit">Edit</button>
+                    </form>
+                    <form asp-controller="Messages" asp-action="Delete" asp-route-_Id="@Model.Id" method="post">
+                        <button class="btn btn-danger" style="font-size: 15px" type="submit">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @if (Model.FilePath != null && Model.FileType != null)
+        {
+            @if (Model.FileType.Contains("image"))
+            {
+                <div class="mt-1" style="text-align: right;">
+                    <img width="300" height="225" src="@Model.FilePath" alt="Image not found" />
+                </div>
+            }
+            else if (Model.FileType.Contains("video"))
+            {
+                <div class="mt-1" style="text-align: right;">
+                    <video width="300" height="225" controls>
+                        <source src="@Model.FilePath" type="@Model.FileType" />
+                    </video>
+                </div>
+            }
+        }
+        @if (Model.Content != null)
+        {
+            <div style="text-align: right; margin: 0.2rem 0 0 0; ">@Model.Content</div>
+        }
+        <div class="text-muted" style="text-align: right; margin: 0 0 0.1rem 0">@_Time</div>
+    </div>
+}
+else
+{
+    <div style="grid-column: 1; background-color: white; border-radius: 0.2rem">
+        <a href="/Users/Show/@Model.UserId">
+            <h4 style="text-align: left; margin: 1rem 0 0 0.5rem">@_UserName</h4>
+        </a>
+        @if (Model.FilePath != null && Model.FileType != null)
+        {
+            @if (Model.FileType.Contains("image"))
+            {
+                <div style="margin-left: 0.5rem">
+                    <img width="300" height="225" src="@Model.FilePath" alt="Image not found" />
+                </div>
+            }
+            else if (Model.FileType.Contains("video"))
+            {
+                <div style="margin-left: 0.5rem">
+                    <video width="300" height="225" controls>
+                        <source src="@Model.FilePath" type="@Model.FileType" />
+                    </video>
+                </div>
+            }
+        }
+        @if (Model.Content != null)
+        {
+            <p style="text-align: left; margin: 0.2rem 0 0.1rem 0.5rem; font-size: 25px">@Model.Content</p>
+        }
+        <p class="text-muted" style="text-align: left; margin: 0 0 0.1rem 0.5rem">@Model.Date</p>
+        @if (User.IsInRole("Admin"))
+        {
+            <hr / style="margin: 0">
+            <div class="d-flex" style="justify-content: left; margin: 0.3rem 0 0.5rem 0.5rem">
+                <form action="/Messages/Edit/@Model.Id" method="get">
+                    <button class="btn BMCA_btn" style="font-size: 15px" type="submit">Edit</button>
+                </form>
+                <form action="/Messages/Delete/@Model.Id" method="post">
+                    <button class="btn BMCA_btn_del" style="font-size: 15px; margin-left: 0.5rem" type="submit">Delete</button>
+                </form>
+            </div>
+        }
+        <div style="grid-column: 2"></div>
+    </div>
+}

@@ -6,34 +6,61 @@
 
 <div class="ChatterBox_sitecard">
 
-    @Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
+	@Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
 
-    <div class="ChatterBox_rightPanel">
-        <div class="ChatterBox_upperSubPanel">
-            <h1>Channels</h1>
-            <a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
-        </div>
-        <div class="ChatterBox_upperSubPanel">
-            <h1>@Model.Name</h1>
-            <a class="bi bi-three-dots-vertical ChatterBox_btn_icon" asp-controller="Channels" asp-action="Display" asp-route-_Id="@Model.Id"></a>
-        </div>
-        <div class="ChatterBox_lowerSubPanel"> 
-            <form method="get">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search Channels" name="search"
-                           value="@ViewBag.SearchString">
-                    <button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
-                </div>
-            </form>
+	<div class="ChatterBox_rightPanel">
+		<div class="ChatterBox_upperSubPanel">
+			<h1>Channels</h1>
+			<a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
+		</div>
+		<div class="ChatterBox_upperSubPanel">
+			<h1>@Model.Name</h1>
+			<a class="bi bi-three-dots-vertical ChatterBox_btn_icon" asp-controller="Channels" asp-action="Display" asp-route-_Id="@Model.Id"></a>
+		</div>
+		<div class="ChatterBox_lowerSubPanel"> 
+			<form method="get">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search Channels" name="search"
+						   value="@ViewBag.SearchString">
+					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+				</div>
+			</form>
 
-            <br />
+			<br />
 
 			@foreach(ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
 			{
 				@Html.Partial("ChannelBox", _Channel)
 			}
-        </div>
-        <div class="ChatterBox_lowerSubPanel">
-        </div>
-    </div>
+		</div>
+		<div class="d-flex flex-column ChatterBox_lowerSubPanel" style="padding: 1vh 0">
+			<div id="messages-container" class="d-flex flex-column flex-grow-1 overflow-auto" style="max-height: calc(90vh - 100px);">
+				@foreach (Message _Message in ViewBag.ChatMessages)
+				{
+					@Html.Partial("MessageBubble", _Message)
+				}
+			</div>
+			<div style="text-align: center;">
+				<form asp-controller="Messages" asp-action="New" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="_Message.ChannelId" value="@Model.Id" />
+					@Html.TextBox("_Message.Content")
+					<input type="file" name="_File" />
+					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Send</button>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
+
+<script>
+	// Function to scroll the message container to the bottom
+		function scrollToBottom() {
+			const messagesContainer = document.getElementById('messages-container');
+			messagesContainer.scrollTop = messagesContainer.scrollHeight;
+		}
+
+		// Call scrollToBottom when the page loads
+		document.addEventListener('DOMContentLoaded', () => {
+			scrollToBottom();
+		});
+</script>

@@ -71,6 +71,10 @@ app.MapControllerRoute(name: "ChannelsShow", pattern: "Channels/Show/{_Id}", def
 app.MapControllerRoute(name: "ChannelsDisplay", pattern: "Channels/Info/{_Id}", defaults: new { controller = "Channels", action = "Display" });
 app.MapControllerRoute(name: "ChannelsNew", pattern: "Channels/New", defaults: new { controller = "Channels", action = "New" });
 
+app.MapControllerRoute(name: "MessagesNew", pattern: "Messages/New", defaults: new { controller = "Messages", action = "New" });
+app.MapControllerRoute(name: "MessagesEdit", pattern: "Messages/Edit/{_Id}", defaults: new { controller = "Messages", action = "Edit" });
+app.MapControllerRoute(name: "MessagesDelete", pattern: "Messages/Delete/{_Id}", defaults: new { controller = "Messages", action = "Delete" });
+
 app.MapRazorPages();
 
 app.Run();

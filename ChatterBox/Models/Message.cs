@@ -20,7 +20,7 @@ namespace ChatterBox.Models
         public string? FileType{ get; set; }
 
         [Required]
-        public DateTime? Date { get; set; }
+        public DateTime Date { get; set; }
 
         [Required]
         public string? UserId { get; set; }
