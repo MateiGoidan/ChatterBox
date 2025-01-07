@@ -3,7 +3,7 @@ using ChatterBox.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChatterBox.Controllers
 {
@@ -19,50 +19,16 @@ namespace ChatterBox.Controllers
 			MyRoleManager = _MyRoleManager;
 		}
 
-		[NonAction]
-		public void GetChannels()
-		{
-			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
-				.Where(b => b.UserId == MyUserManager.GetUserId(User))
-				.ToList();
-
-			List<int> _ChannelsIds = new List<int>();
-			foreach (BindChannelUser _Bind in _BindChannelUser)
-			{
-				_ChannelsIds.Add(_Bind.ChannelId);
-			}
-
-			string _Search = "";
-
-			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["search"])))
-			{
-				_Search = Convert.ToString(Request.Query["Search"]);
-
-				_ChannelsIds = MyDataBase.Channels
-					.Where(c => c.Name.ToUpper().Contains(_Search.ToUpper()) || c.Description.ToUpper().Contains(_Search.ToUpper()))
-					.Select(c => c.Id)
-					.ToList();
-			}
-
-			var _Channels = MyDataBase.Channels
-				.Where(c => _ChannelsIds.Contains(c.Id))
-				.ToList();
-
-			ViewBag.SearchString = _Search;
-
-			ViewBag.UserChannels = _Channels;
-		}
-
 		[Authorize(Roles = "User, Admin")]
 		public IActionResult Show(string _Id)
 		{
 			GetChannels();
 
-			ApplicationUser user = MyDataBase.Users.Find(_Id);
+			ApplicationUser? _User = MyDataBase.Users.Find(_Id);
 
 			try
 			{
-				return View(user);
+				return View(_User);
 			}
 			catch
 			{
@@ -83,6 +49,42 @@ namespace ChatterBox.Controllers
 			}
 
 			return View();
+		}
+
+		[Authorize(Roles = "User, Admin")]
+		public IActionResult Inbox(string Id)
+		{
+			var _User = MyDataBase.Users
+					.Include(u => u.BindRequestChannelUsers)
+					.ThenInclude(b => b.Request) // Include Request navigation property
+					.Include(u => u.BindRequestChannelUsers)
+					.ThenInclude(b => b.Channel) // Include Channel navigation property
+					.FirstOrDefault(u => u.Id == Id);
+
+			if (_User == null || _User.BindRequestChannelUsers == null)
+			{
+				return View("Error", new ErrorViewModel { RequestId = "User not found!" });
+			}
+
+			GetChannels();
+
+			List<BindRequestChannelUser> _BindList = new List<BindRequestChannelUser>();
+
+			foreach(BindRequestChannelUser _Bind in _User.BindRequestChannelUsers)
+			{
+				_BindList.Add(_Bind);
+			}
+
+			ViewBag.Requests = _BindList;
+
+			try
+			{
+				return View(_User);
+			}
+			catch
+			{
+				return View("Error", new ErrorViewModel { RequestId = "Could not find the inbox of the user that you are looking for!" });
+			}
 		}
 
 		[Authorize(Roles = "User, Admin")]
@@ -191,6 +193,42 @@ namespace ChatterBox.Controllers
 			{
 				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to demote a user. Please contact the dev team in order to resolve this issue." });
 			}
+		}
+
+		[NonAction]
+		public void GetChannels()
+		{
+			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
+				.Where(b => b.UserId == MyUserManager.GetUserId(User))
+				.ToList();
+
+			List<int> _ChannelsIds = new List<int>();
+			foreach (BindChannelUser _Bind in _BindChannelUser)
+			{
+				_ChannelsIds.Add(_Bind.ChannelId);
+			}
+
+			string _Search = "";
+
+			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["search"])))
+			{
+				_Search = Convert.ToString(Request.Query["Search"]);
+
+				_ChannelsIds = MyDataBase.Channels
+					.Where(c => (c.Name.ToUpper().Contains(_Search.ToUpper()) ||
+					c.Description.ToUpper().Contains(_Search.ToUpper())) && 
+					_ChannelsIds.Contains(c.Id))
+					.Select(c => c.Id)
+					.ToList();
+			}
+
+			var _Channels = MyDataBase.Channels
+				.Where(c => _ChannelsIds.Contains(c.Id))
+				.ToList();
+
+			ViewBag.SearchString = _Search;
+
+			ViewBag.UserChannels = _Channels;
 		}
 	}
 }

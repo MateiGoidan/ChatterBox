@@ -4,7 +4,7 @@
 	<h2 class="mb-0">@Model.Title</h2>
 	<hr>
 	<div class="d-flex justify-content-start ">
-		<a class="btn btn-dark ChatterBox_btn_light" style="font-size: 15px; margin-right: 1vw;" asp-controller="Categories" asp-action="Edit" asp-route-_Id="@Model.Id">Edit</a>
+		<a class="btn btn-dark ChatterBox_btn_light me-1" style="font-size: 15px;" asp-controller="Categories" asp-action="Edit" asp-route-_Id="@Model.Id">Edit</a>
 		<form asp-controller="Categories" asp-action="Delete" asp-route-_Id="@Model.Id" method="post">
 			<button class="btn btn-danger ChatterBox_btn_del" style="font-size: 15px" type="submit">Delete</button>
 		</form>

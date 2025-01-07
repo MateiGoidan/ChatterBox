@@ -19,7 +19,6 @@
     background-color: white;
     border-color: #ced4da;
     color: black;
-    font-size: 18px;
 }
 
     .ChatterBox_btn_light:hover {
@@ -79,7 +78,7 @@
     }
 
 .ChatterBox_sitecard {
-    max-height: 100vh;
+    height: 100vh;
     overflow: hidden;
     display: grid;
     grid-template-columns: 1fr 5fr;
@@ -117,6 +116,7 @@
 .ChatterBox_lowerSubPanel {
     border-left: 2px solid #d4d4d4;
     padding: 1vh 1vw;
+    overflow: auto;
 }
 
 .ChatterBox_subcard {

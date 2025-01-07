@@ -5,41 +5,43 @@
 @model ChatterBox.Models.Channel
 
 @{
-    var _UserId = MyUserManager.GetUserId(User);
-    var _User = await MyUserManager.FindByIdAsync(_UserId);
-    IList<string> _Roles = await MyUserManager.GetRolesAsync(_User);
-    string _Role = _Roles[0];
+	var _UserId = MyUserManager.GetUserId(User);
+	var _User = await MyUserManager.FindByIdAsync(_UserId);
+	IList<string> _Roles = await MyUserManager.GetRolesAsync(_User);
+	string _Role = _Roles[0];
 }
 
-<div class="card d-flex flex-row justify-content-between" style="margin-bottom: 1vh; padding: 1vh 1vw;">
+<div class="card d-flex flex-row justify-content-between align-items-center mb-3 p-3">
+    <!-- Channel Details Section -->
     <div>
-        <h2>@Model.Name</h2>
-        <p style="color: #4c5c75">@Model.Category.Title</p>
+        <h2 class="mb-1">@Model.Name</h2>
+        <p class="text-muted">@Model.Category.Title</p>
     </div>
-    <div class="d-flex flex-row align-items-center">
+
+    <!-- Actions Section -->
+    <div class="d-flex flex-row align-items-center gap-3">
         @if (ViewBag.UserChannels.Contains(Model))
         {
-            <button class="btn btn-dark ChatterBox_btn_light" style="margin-right: 1vw;" disabled>Joined</button>
+            <button class="btn btn-secondary btn-sm" style="font-size: 1.3rem;" disabled>Joined</button>
+        }
+        else if (ViewBag.PendingChannels.Contains(Model))
+        {
+            <button class="btn btn-warning btn-sm" style="font-size: 1.3rem;" disabled>Pending</button>
         }
         else
         {
-            <form asp-controler="ChannelRequests" asp-action="New">
-                <input type="hidden" name="ChannelId" value="@Model.Id" />
-
-                <input type="hidden" name="RequesterId" value="@_UserId" />
-
-                <input type="hidden" name="TargetUserId" value="@ViewBag.Admin" />
-
-                <input type="hidden" name="RequestType" value="Request" />
-
-                <button class="btn btn-dark ChatterBox_btn_light" style="margin-right: 1vw;" type="submit">Join</button>
+            <form asp-controller="Requests" asp-action="New" class="d-inline">
+                <input type="hidden" name="_ChannelId" value="@Model.Id" />
+                <input type="hidden" name="_UserId" value="@_UserId" />
+                <input type="hidden" name="RequestType" value="Join" />
+                <button class="btn btn-primary btn-sm" style="font-size: 1.3rem;" type="submit">Join</button>
             </form>
         }
 
         @if (_Role == "Admin")
         {
-            <form asp-controller="Channels" asp-action="Delete" asp-route-_Id="@Model.Id" method="post">
-                <button class="btn btn-danger ChatterBox_btn_del" type="submit">Delete</button>
+            <form asp-controller="Channels" asp-action="Delete" asp-route-_Id="@Model.Id" method="post" class="d-inline">
+                <button class="btn btn-danger btn-sm" style="font-size: 1.3rem;" type="submit">Delete</button>
             </form>
         }
     </div>

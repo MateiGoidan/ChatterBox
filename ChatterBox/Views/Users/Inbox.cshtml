@@ -1,0 +1,135 @@
+﻿@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
+
+@model ApplicationUser
+
+<div class="ChatterBox_sitecard">
+
+	@Html.Partial("SideBar", Model)
+
+	<div class="ChatterBox_rightPanel">
+
+		<div class="ChatterBox_upperSubPanel">
+
+			<h1>Channels</h1>
+
+			<a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
+
+		</div>
+
+		<div class="ChatterBox_upperSubPanel">
+
+			<h1>Inbox</h1>
+
+			<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { AreaAttribute = "" })">
+
+				<button type="submit" class="bi bi-box-arrow-right ChatterBox_btn_icon"></button>
+
+			</form>
+
+		</div>
+
+		<div class="ChatterBox_lowerSubPanel">
+
+			<form method="GET">
+
+				<div class="input-group">
+
+					<input type="text" class="form-control" placeholder="Search Channels" name="search" value="@ViewBag.SearchString">
+
+					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+
+				</div>
+
+			</form>
+
+			<br />
+
+			@foreach (Channel _Channel in ViewBag.UserChannels)
+			{
+				<partial name="ChannelBox" model="_Channel" />
+			}
+
+		</div>
+
+		<div class="ChatterBox_lowerSubPanel">
+
+			@foreach (BindRequestChannelUser _Bind in ViewBag.Requests)
+			{
+				Request? _Request = _Bind.Request;
+				Channel? _Channel = _Bind.Channel;
+
+				if (_Request == null || _Channel == null)
+				{
+					continue;
+				}
+
+				<div class="card mb-3 inbox-item">
+
+					<div class="card-body position-relative">
+
+						@if(_Bind.Status == "Accepted") {
+							<form asp-controller="Requests" asp-action="Delete" asp-route-Id="@_Bind.RequestId" method="post" class="position-absolute top-0 end-0 me-2 mt-2 text-danger" title="Delete">
+								<button type="submit" class="btn btn-link text-danger p-0" title="Delete">
+									<i class="bi bi-x-circle"></i>
+								</button>
+							</form>
+						}
+						else if (_Bind.Status == "Pending")
+						{
+							<div class="position-absolute top-0 end-0 me-2 mt-2 text-danger">
+								<button class="btn btn-link text-danger p-0" title="Delete" disabled>
+									<i class="bi bi-x-circle"></i>
+								</button>
+							</div>
+						}
+
+						@if (_Request.RequestType == "Join")
+						{
+							<!-- Join Request -->
+							<div class="d-flex flex-column justify-content-between align-items-start">
+
+								<div>
+									<strong>Request to join:</strong> @_Channel.Name
+								</div>
+
+								<div class="text-muted small">Status: @_Bind.Status</div>
+
+							</div>
+						}
+						else
+						{
+							@if (_Bind.Status == "Pending")
+							{
+								<!-- Invitation Pending -->
+								<div>
+									<strong>Invitation:</strong> You have been invited to join <strong>@_Channel.Name</strong>
+								</div>
+
+								<div class="d-flex mt-3">
+
+									<form asp-controller="Requests" asp-action="Accept" asp-route-id="@_Bind.RequestId" method="post" class="me-2">
+										<button class="btn btn-success" type="submit">Accept</button>
+									</form>
+
+									<form asp-controller="Requests" asp-action="Decline" asp-route-id="@_Bind.RequestId" method="post">
+										<button class="btn btn-danger" type="submit">Decline</button>
+									</form>
+
+								</div>
+							}
+							else
+							{
+								<!-- Already Joined -->
+								<div>
+									<strong>Joined:</strong> You have successfully joined <strong>@_Channel.Name</strong>
+								</div>
+							}
+						}
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>

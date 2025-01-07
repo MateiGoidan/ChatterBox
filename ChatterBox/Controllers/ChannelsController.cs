@@ -41,7 +41,9 @@ namespace ChatterBox.Controllers
 				_Search = Convert.ToString(Request.Query["Search"]);
 
 				_ChannelsIds = MyDataBase.Channels
-					.Where(c => c.Name.ToUpper().Contains(_Search.ToUpper()) || c.Description.ToUpper().Contains(_Search.ToUpper()))
+					.Where(c => (c.Name.ToUpper().Contains(_Search.ToUpper()) ||
+					c.Description.ToUpper().Contains(_Search.ToUpper())) && 
+					_ChannelsIds.Contains(c.Id))
 					.Select(c => c.Id)
 					.ToList();
 			}
@@ -60,12 +62,22 @@ namespace ChatterBox.Controllers
 		{
 			GetUserChannels();
 
+			List<Channel?> _PendingChannels = MyDataBase.BindRequestChannelUserEntries
+				.Where(b => b.UserId == MyUserManager.GetUserId(User) &&
+				b.Status == "Pending")
+				.Select(b => b.Channel)
+				.ToList();
+
+			ViewBag.PendingChannels = _PendingChannels;
+
 			ViewBag.Channels = MyDataBase.Channels.Include("Category").ToList();
 
-			ViewBag.Admin = MyDataBase.BindChannelUserEntries
-				.Where(b => b.Role == "Admin")
-				.Select(b => b.UserId)
-				.First();
+			List<string?> _Admins = MyDataBase.BindChannelUserEntries
+				.Where(b => b.Role == "Admin" && 
+				b.UserId == MyUserManager.GetUserId(User))
+				.Select(b => b.UserId).ToList();
+
+			ViewBag.Admins = _Admins;
 
 			if (TempData.ContainsKey("Message"))
 			{
@@ -103,6 +115,8 @@ namespace ChatterBox.Controllers
 
 			GetUserChannels();
 
+			GetRole(_Channel.Id);
+
 			ViewBag.ChatMessages = _Channel.Messages.ToList().OrderBy(m => m.Date);
 
 			return View(_Channel);
@@ -111,7 +125,9 @@ namespace ChatterBox.Controllers
 		[Authorize(Roles = "User,Admin")]
 		public IActionResult Display(int _Id)
 		{
-			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser").Include("Category").Where(m => m.Id == _Id).First();
+			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser")
+				.Include("Category").Include("BindRequestChannelUser")
+				.Where(m => m.Id == _Id).First();
 
 			if (_Channel == null || _Channel.BindChannelUser == null || _Channel.Category == null)
 			{
@@ -136,6 +152,8 @@ namespace ChatterBox.Controllers
 
 			GetUserChannels();
 
+			GetRole(_Channel.Id);
+
 			List<BindChannelUser> _AllBinds = new List<BindChannelUser>();
 
 			foreach (BindChannelUser _Bind in _Channel.BindChannelUser)
@@ -151,6 +169,52 @@ namespace ChatterBox.Controllers
 			}
 
 			ViewBag.AllBinds = _AllBinds;
+
+			List<BindRequestChannelUser> _ChannelRequests = new List<BindRequestChannelUser>();
+
+			if(_Channel.BindRequestChannelUser != null)
+			{
+				foreach (BindRequestChannelUser _BindRequest in _Channel.BindRequestChannelUser)
+				{
+					ApplicationUser? _RequestUser = MyDataBase.AppUsers.Find(_BindRequest.UserId);
+
+					if (_RequestUser == null)
+					{
+						continue;
+					}
+
+					Request? _Request = MyDataBase.Requests.Find(_BindRequest.RequestId);
+
+					if (_Request == null && _Request.RequestType == null)
+					{
+						continue;
+					}
+
+					if (_BindRequest.Status == "Pending" && _Request.RequestType == "Join")
+					{
+						_ChannelRequests.Add(_BindRequest);
+					}
+				}
+			}
+
+			ViewBag.ChannelRequests = _ChannelRequests;
+
+			if(_Channel.BindRequestChannelUser != null)
+			{
+				List<string> NonMembersIds = MyDataBase.Users
+					.Where(u => !_Channel.BindChannelUser.Select(b => b.UserId).Contains(u.Id))
+					.Select(u => u.Id).ToList();
+
+				foreach (BindRequestChannelUser _BindRequest in _Channel.BindRequestChannelUser)
+				{
+					if(_BindRequest.Status == "Pending" && _BindRequest.UserId != null)
+					{
+						NonMembersIds.Remove(_BindRequest.UserId);
+					}
+				}
+
+				ViewBag.NonMembersIds = NonMembersIds;
+			}
 
 			return View(_Channel);
 		}
@@ -193,25 +257,6 @@ namespace ChatterBox.Controllers
 				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to create a new channel. Please contact the dev team in order to resolve this issue." });
 			}
 		}
-
-		//[Authorize(Roles = "User,Admin")]
-		//[HttpPost]
-		//public IActionResult Join()
-		//{
-		//	if (!ModelState.IsValid)
-		//	{
-		//		return Redirect("List");
-		//	}
-
-		//	try
-		//	{
-
-		//	}
-		//	catch
-		//	{
-		//		return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to join the channel. Please contact the dev team in order to resolve this issue." });
-		//	}
-		//}
 
 		[Authorize(Roles = "User,Admin")]
 		public IActionResult Edit(int _Id)
@@ -328,11 +373,157 @@ namespace ChatterBox.Controllers
 			}
 		}
 
-		[HttpPost]
 		[Authorize(Roles = "User,Admin")]
+		[HttpPost]
+		public IActionResult RemoveMember(int Id, string UserId)
+		{
+			if (UserId == null)
+			{
+				return View("Error", new ErrorViewModel { RequestId = "No user ID supplied for kick operation!" });
+			}
+
+			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser")
+				.Where(m => m.Id == Id).First();
+
+			if (_Channel == null || _Channel.BindChannelUser == null)
+			{
+				return View("Error", new ErrorViewModel { RequestId = "No channel found for the ID!" });
+			}
+
+			BindChannelUser? _OriginalBind = MyDataBase.BindChannelUserEntries
+				.Where(b => b.ChannelId == Id && b.UserId == UserId).First();
+
+			if (_OriginalBind == null)
+			{
+				return View("Error", new ErrorViewModel { RequestId = "Remove attempt on non existing member." });
+			}
+
+			int _Admins = 0;
+
+			foreach (BindChannelUser _Bind in _Channel.BindChannelUser)
+			{
+				if (_Bind.Role == "Admin")
+				{
+					_Admins++;
+				}
+			}
+
+			if (_Admins == 1 && _OriginalBind.Role == "Admin")
+			{
+				return View("Error", new ErrorViewModel { RequestId = "Cannot remove the last admin from the channel!" });
+			}
+
+			try
+			{
+				MyDataBase.BindChannelUserEntries.Remove(_OriginalBind);
+
+				MyDataBase.SaveChanges();
+			}
+			catch
+			{
+				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to remove a member from the chat. Please contact the dev team in order to resolve this issue." });
+			}
+
+			if (UserId == MyUserManager.GetUserId(User))
+			{
+				return Redirect("/Users/Show/" + UserId);
+			}
+			else
+			{
+				return Redirect("/Channels/Info/" + Id);
+			}
+		}
+
+		[Authorize(Roles ="User,Admin")]
+		[HttpPost]
+		public IActionResult Promote(int Id, string UserId)
+		{
+			BindChannelUser _Bind = MyDataBase.BindChannelUserEntries
+				.Where(b => b.ChannelId == Id && b.UserId == UserId).First();
+
+			if(_Bind == null)
+			{
+				return View("Error", new ErrorViewModel { RequestId = "Promote attempt on non existing member!" });
+			}
+
+			string? _OldRole = _Bind.Role;
+			string _NewRole = "";
+
+			if (_OldRole == "Member")
+			{
+				_NewRole = "Moderator";
+			}
+			else if (_OldRole == "Moderator")
+			{
+				_NewRole = "Admin";
+			}
+			else
+			{
+				return View("Error", new ErrorViewModel { RequestId = "User is already an admin!" });
+			}
+			
+			try
+			{
+				_Bind.Role = _NewRole;
+
+				MyDataBase.SaveChanges();
+
+				return Redirect("/Channels/Info/" + Id);
+			}
+			catch
+			{
+				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to promote a user. Please contact the dev team in order to resolve this issue." });
+			}
+		}
+
+		[Authorize(Roles ="User,Admin")]
+		[HttpPost]
+		public IActionResult Demote(int Id, string UserId)
+		{
+			BindChannelUser _Bind = MyDataBase.BindChannelUserEntries
+				.Where(b => b.ChannelId == Id && b.UserId == UserId).First();
+
+			if(_Bind == null)
+			{
+				return View("Error", new ErrorViewModel { RequestId = "Demote attempt on non existing member!" });
+			}
+
+			string? _OldRole = _Bind.Role;
+			string _NewRole = "";
+
+			if (_OldRole == "Admin")
+			{
+				_NewRole = "Moderator";
+			}
+			else if (_OldRole == "Moderator")
+			{
+				_NewRole = "Member";
+			}
+			else
+			{
+				return View("Error", new ErrorViewModel { RequestId = "User is already a member!" });
+			}
+			
+			try
+			{
+				_Bind.Role = _NewRole;
+
+				MyDataBase.SaveChanges();
+
+				return Redirect("/Channels/Info/" + Id);
+			}
+			catch
+			{
+				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to demote a user. Please contact the dev team in order to resolve this issue." });
+			}
+		}
+
+		[Authorize(Roles = "User,Admin")]
+		[HttpPost]
 		public IActionResult Delete(int _ID)
 		{
-			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser").Where(m => m.Id == _ID).First();
+			Channel? _Channel = MyDataBase.Channels.Include("BindChannelUser")
+				.Where(m => m.Id == _ID).First();
 
 			if (_Channel == null || _Channel.BindChannelUser == null)
 			{
@@ -383,6 +574,18 @@ namespace ChatterBox.Controllers
 			{
 				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to delete the channel. Please contact the dev team in order to resolve this issue." });
 			}
+		}
+
+		[NonAction]
+		public void GetRole(int Id)
+		{
+			string? _UserId = MyUserManager.GetUserId(User);
+
+			string? _Role = MyDataBase.BindChannelUserEntries
+				.Where(b => b.ChannelId == Id && b.UserId == _UserId).Select(b => b.Role).First()
+				.ToString();
+
+			ViewBag.UserRole = _Role;
 		}
 
 		[NonAction]

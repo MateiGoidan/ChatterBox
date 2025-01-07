@@ -12,24 +12,50 @@
 }
 
 <div class="ChatterBox_leftPanel">
+
     <div class="ChatterBox_leftSubPanel">
+
         <a class="bi bi-person-circle ChatterBox_link" style="font-size: 80px;" asp-controller="Users" asp-action="Show" asp-route-_Id="@_UserId"></a>
+        
         <h2 style="color:white">@_UserName</h2>
+
         <h4 style="color: #4c5c75">@Model.UserName</h4>
+
     </div>
+
     <div class="ChatterBox_leftSubPanel" style="align-items: start; padding: 2vh;">
+
         <a class="bi bi-person-fill ChatterBox_link" asp-controller="Users" asp-action="Show" asp-route-_Id="@Model.Id"> Account </a>
-        <div class="bi bi-envelope-fill ChatterBox_link"> Inbox </div>
+
+        <a class="bi bi-envelope-fill ChatterBox_link" asp-controller="Users" asp-action="Inbox" asp-route-Id="@_UserId"> Inbox </a>
+
+@*         <form asp-controller="Users" asp-action="Inbox" method="post">
+
+            <input type="hidden" name="Id" value="@_UserId"/>
+
+            <button class="bi bi-envelope-fill ChatterBox_link" type="submit"> Inbox </button>
+
+        </form>
+ *@
         <a class="bi bi-wechat ChatterBox_link" asp-controller="Channels" asp-action="List"> Join Chats </a>
+
         <br />
+
         @if (User.IsInRole("Admin"))
         {
             <h5 style="color: #4c5c75">Administrator</h5>
+
             <a class="bi bi-people-fill ChatterBox_link" asp-area="" asp-controller="Users" asp-action="List"> Users </a>
+
             <a class="bi bi-grid-fill ChatterBox_link" asp-area="" asp-controller="Categories" asp-action="List"> Categories </a>
         }
+
     </div>
+
     <div class="ChatterBox_leftSubPanel">
+
         <div class="bi bi-globe-europe-africa ChatterBox_link"></div>
+
     </div>
+
 </div>

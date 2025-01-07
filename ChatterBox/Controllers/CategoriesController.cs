@@ -42,7 +42,9 @@ namespace ChatterBox.Controllers
 				_Search = Convert.ToString(Request.Query["Search"]);
 
 				_ChannelsIds = MyDataBase.Channels
-					.Where(c => c.Name.ToUpper().Contains(_Search.ToUpper()) || c.Description.ToUpper().Contains(_Search.ToUpper()))
+					.Where(c => (c.Name.ToUpper().Contains(_Search.ToUpper()) ||
+					c.Description.ToUpper().Contains(_Search.ToUpper())) && 
+					_ChannelsIds.Contains(c.Id))
 					.Select(c => c.Id)
 					.ToList();
 			}

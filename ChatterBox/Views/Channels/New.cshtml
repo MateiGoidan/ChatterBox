@@ -5,7 +5,7 @@
 @model Channel
 
 @{
-    ApplicationUser applicationUser = MyUserManager.GetUserAsync(User).Result;
+    ApplicationUser? applicationUser = MyUserManager.GetUserAsync(User).Result;
 }
 
 <div class="ChatterBox_sitecard">

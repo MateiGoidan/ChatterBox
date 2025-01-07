@@ -6,51 +6,71 @@
 
 <div class="ChatterBox_sitecard">
 
-    @Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
+	@Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
 
-    <div class="ChatterBox_rightPanel">
-        <div class="ChatterBox_upperSubPanel">
-            <h1>Channels</h1>
-            <a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
-        </div>
-        <div class="ChatterBox_upperSubPanel">
-            <h1>Channels List</h1>
-        </div>
-        <div class="ChatterBox_lowerSubPanel">
-            <form method="get">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search Channels" name="search"
-                           value="@ViewBag.SearchString">
-                    <button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
-                </div>
-            </form>
+	<div class="ChatterBox_rightPanel">
 
-            <br />
+		<div class="ChatterBox_upperSubPanel">
 
-            @foreach (ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
-            {
-                @Html.Partial("ChannelBox", _Channel)
-            }
-        </div>
-        <div class="ChatterBox_lowerSubPanel">
-            @if (ViewBag.TempMsg != null)
-            {
-                <h2 class="alert-success p-3 rounded-3 text-center mb-5">@ViewBag.TempMsg</h2>
-                <br />
-            }
+			<h1>Channels</h1>
 
-            @if (ViewBag.Channels.Count == 0)
-            {
-                <h2 class="alert-danger p-3 rounded-3 text-center mb-5">No channels found!</h2>
-                <br />
-            }
-            else
-            {
-                @foreach (ChatterBox.Models.Channel _Channel in ViewBag.Channels)
-                {
-                    @Html.Partial("ChannelCard", _Channel)
-                }
-            }
-        </div>
-    </div>
+			<a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
+
+		</div>
+
+		<div class="ChatterBox_upperSubPanel">
+
+			<h1>Channels List</h1>
+
+		</div>
+
+		<div class="ChatterBox_lowerSubPanel">
+
+			<form method="get">
+
+				<div class="input-group">
+
+					<input type="text" class="form-control" placeholder="Search Channels" name="search" value="@ViewBag.SearchString">
+
+					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+
+				</div>
+
+			</form>
+
+			<br />
+
+			@foreach (ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
+			{
+				@Html.Partial("ChannelBox", _Channel)
+			}
+
+		</div>
+
+		<div class="ChatterBox_lowerSubPanel">
+
+			@if (ViewBag.TempMsg != null)
+			{
+				<h2 class="alert-success p-3 rounded-3 text-center mb-5">@ViewBag.TempMsg</h2>
+
+				<br />
+			}
+
+			@if (ViewBag.Channels.Count == 0)
+			{
+				<h2 class="alert-danger p-3 rounded-3 text-center mb-5">No channels found!</h2>
+
+				<br />
+			}
+			else
+			{
+				@foreach (ChatterBox.Models.Channel _Channel in ViewBag.Channels)
+				{
+					@Html.Partial("ChannelCard", _Channel)
+				}
+			}
+		</div>
+
+	</div>
+
 </div>
