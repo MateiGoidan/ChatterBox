@@ -31,6 +31,8 @@ namespace ChatterBox.Data
 			builder.Entity<BindRequestChannelUser>().HasOne(ac => ac.Channel).WithMany(ac => ac.BindRequestChannelUser).HasForeignKey(ac => ac.ChannelId);
 			builder.Entity<BindRequestChannelUser>().HasOne(ac => ac.User).WithMany(ac => ac.BindRequestChannelUsers).HasForeignKey(ac => ac.UserId);
 			builder.Entity<BindRequestChannelUser>().HasOne(ac => ac.Request).WithMany(ac => ac.BindRequestChannelUsers).HasForeignKey(ac => ac.RequestId);
+			
+			builder.Entity<Channel>().Property(c => c.Description).HasMaxLength(500);
 		}
 	}
 }

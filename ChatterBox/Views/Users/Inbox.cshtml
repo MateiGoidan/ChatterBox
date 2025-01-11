@@ -65,11 +65,33 @@
 					continue;
 				}
 
+				string _CreateTime = "";
+				DateTime _Date = _Request.CreatedAt;
+				if (_Date.Date == DateTime.Today)
+				{
+					_CreateTime = _Date.ToString("HH:mm");
+				}
+				else
+				{
+					_CreateTime = _Date.ToString("M");
+				}
+
+				string _ProcessedTime = "";
+				_Date = _Request.ProcessedAt;
+				if (_Date.Date == DateTime.Today)
+				{
+					_ProcessedTime = _Date.ToString("HH:mm");
+				}
+				else
+				{
+					_ProcessedTime = _Date.ToString("M");
+				}
+
 				<div class="card mb-3 inbox-item">
 
 					<div class="card-body position-relative">
 
-						@if(_Bind.Status == "Accepted") {
+						@if(_Bind.Status == "Accepted" || _Bind.Status == "Declined") {
 							<form asp-controller="Requests" asp-action="Delete" asp-route-Id="@_Bind.RequestId" method="post" class="position-absolute top-0 end-0 me-2 mt-2 text-danger" title="Delete">
 								<button type="submit" class="btn btn-link text-danger p-0" title="Delete">
 									<i class="bi bi-x-circle"></i>
@@ -87,16 +109,38 @@
 
 						@if (_Request.RequestType == "Join")
 						{
-							<!-- Join Request -->
-							<div class="d-flex flex-column justify-content-between align-items-start">
+                            if (_Bind.Status == "Pending")
+                            {
+                                <!-- Accepted Join Request -->
+                                <div class="d-flex flex-row justify-content-between align-items-end">
+                                    <div class="d-flex flex-column justify-content-between align-items-start">
+                                        <div>
+                                            <strong>Request to join:</strong> @_Channel.Name
+                                        </div>
 
-								<div>
-									<strong>Request to join:</strong> @_Channel.Name
-								</div>
+                                        <div class="text-muted small">Status: @_Bind.Status</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">@_CreateTime</div>
+                                    </div>
+                                </div>
+                            }
+							else
+							{
+                                <!-- Accepted Join Request -->
+                                <div class="d-flex flex-row justify-content-between align-items-end">
+                                    <div class="d-flex flex-column justify-content-between align-items-start">
+                                        <div>
+                                            <strong>Request to join:</strong> @_Channel.Name
+                                        </div>
 
-								<div class="text-muted small">Status: @_Bind.Status</div>
-
-							</div>
+                                        <div class="text-muted small">Status: @_Bind.Status</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">@_ProcessedTime</div>
+                                    </div>
+                                </div>
+							}
 						}
 						else
 						{
@@ -119,11 +163,24 @@
 
 								</div>
 							}
-							else
+							else if(_Bind.Status == "Accepted")
 							{
-								<!-- Already Joined -->
+								<!-- Joined -->
 								<div>
 									<strong>Joined:</strong> You have successfully joined <strong>@_Channel.Name</strong>
+								</div>
+								<div class="text-end">
+									<div class="text-muted small">@_ProcessedTime</div>
+								</div>
+							}
+							else if(_Bind.Status == "Declined")
+							{
+								<!-- Declined -->
+								<div>
+									<strong>Failed:</strong> You failed to join <strong>@_Channel.Name</strong>
+								</div>
+								<div class="text-end">
+									<div class="text-muted small">@_ProcessedTime</div>
 								</div>
 							}
 						}

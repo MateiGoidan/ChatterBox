@@ -146,7 +146,9 @@ namespace ChatterBox.Controllers
 
 			try
 			{
-				MyDataBase.Requests.Remove(_Request);
+				_Request.ProcessedAt = DateTime.Now;
+
+				_BindRequestChannelUser.Status = "Declined";
 
 				MyDataBase.SaveChanges();
 			}

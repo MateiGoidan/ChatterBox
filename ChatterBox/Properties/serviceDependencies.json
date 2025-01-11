@@ -6,12 +6,7 @@
     },
     "mssql2": {
       "type": "mssql",
-      "connectionId": "ConnectionStrings:ChatterBoxDB",
-      "dynamicId": null
-    },
-    "mssql3": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:Lab12DB",
+      "connectionId": "ConnectionStrings:ChtterBoxDB",
       "dynamicId": null
     }
   }

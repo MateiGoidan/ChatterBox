@@ -151,7 +151,7 @@ namespace ChatterBox.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToAction("Show", "Users", new { id = userId });
+                        return RedirectToAction("Show", "Users", new { _Id = userId });
 					}
                 }
 

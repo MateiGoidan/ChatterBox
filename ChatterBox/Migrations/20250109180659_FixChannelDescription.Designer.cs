@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ChatterBox.Data.Migrations
+namespace ChatterBox.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250104202813_AddedRequests")]
-    partial class AddedRequests
+    [Migration("20250109180659_FixChannelDescription")]
+    partial class FixChannelDescription
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -164,8 +164,8 @@ namespace ChatterBox.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()

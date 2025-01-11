@@ -4,36 +4,67 @@
 @model ChatterBox.Models.ApplicationUser
 
 @{
-    string _UserName = Model.UserName;
-    _UserName = _UserName.Split("@")[0];
-    _UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
+    string _UserName= "";
+    if (Model != null && Model.UserName != null)
+    {
+        _UserName = Model.UserName;
+        _UserName = _UserName.Split("@")[0];
+        _UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
+    }
 
+    string _Role = "";
     var _User = await MyUserManager.FindByIdAsync(Model.Id);
-    IList<string> _Roles = await MyUserManager.GetRolesAsync(_User);
-    string _Role = _Roles[0];
+    if (_User != null)
+    {
+        IList<string> _Roles = await MyUserManager.GetRolesAsync(_User);
+        _Role = _Roles[0];
+    }
 }
 
 @if (Model.Id != MyUserManager.GetUserId(User))
 {
-    <div class="card m-3 p-4" style="background: #24344d;">
-        <h2 class="mb-0" style="color: white">@_UserName</h2>
-        <hr style="color: white">
-        <h5 class="mb-3" style="color: white">Role: @_Role</h5>
-        <div class="d-flex justify-content-start">
+    <div class="card shadow-sm m-3 p-4" style="border: 1px solid #e0e0e0; border-radius: 10px;">
+        <!-- User Info -->
+        <div class="d-flex align-items-center">
+            <div style="flex: 0 0 auto;">
+                <div class="user-avatar" style="width: 60px; height: 60px; background-color: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 600; color: #555;">
+                    @_UserName[0]
+                </div>
+            </div>
+            <div class="ms-3">
+                <div>
+                    <a class="mb-0 ChatterBox_link" style="color: #333; font-size: 20px; font-weight: 600;" asp-controller="Users" asp-action="Show" asp-route-_Id="@Model.Id">
+                        @_UserName
+                    </a>
+                </div>
+                <span style="color: #777; font-size: 14px;">Role: <strong style="color: #555;">@_Role</strong></span>
+            </div>
+        </div>
+
+        <hr style="margin: 20px 0; border-color: #e0e0e0;" />
+
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between">
             @if (_Role == "User")
             {
-                <form asp-controller="Users" asp-action="Promote" asp-route-_Id="@Model.Id" method="post" style="margin-right: 5px">
-                    <button class="btn ChatterBox_btn_dark" style="font-size: 15px" type="submit">Make Admin</button>
+                <form asp-controller="Users" asp-action="Promote" asp-route-_Id="@Model.Id" method="post" style="margin-right: 5px;">
+                    <button class="btn btn-primary" style="font-size: 14px; padding: 8px 12px; border-radius: 5px;" type="submit">
+                        Promote to Admin
+                    </button>
                 </form>
             }
             else if (_Role == "Admin")
             {
-                <form asp-controller="Users" asp-action="Demote" asp-route-_Id="@Model.Id" method="post" style="margin-right: 5px">
-                    <button class="btn ChatterBox_btn_dark" style="font-size: 15px" type="submit">Make User</button>
+                <form asp-controller="Users" asp-action="Demote" asp-route-_Id="@Model.Id" method="post" style="margin-right: 5px;">
+                    <button class="btn btn-warning" style="font-size: 14px; padding: 8px 12px; border-radius: 5px;" type="submit">
+                        Demote to User
+                    </button>
                 </form>
             }
-            <form asp-controller="Users" asp-action="Delete" asp-route-_Id="@Model.Id" method="post">
-                <button class="btn ChatterBox_btn_del" style="font-size: 15px" type="submit">Delete</button>
+            <form asp-controller="Users" asp-action="Delete" asp-route-Id="@Model.Id" method="post">
+                <button class="btn btn-danger" style="font-size: 14px; padding: 8px 12px; border-radius: 5px;" type="submit">
+                    Delete User
+                </button>
             </form>
         </div>
     </div>

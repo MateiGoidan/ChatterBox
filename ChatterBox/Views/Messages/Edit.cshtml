@@ -1,0 +1,85 @@
+﻿@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
+
+@model Message 
+
+<div class="ChatterBox_sitecard">
+
+	@Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result)
+
+	<div class="ChatterBox_rightPanel">
+		<div class="ChatterBox_upperSubPanel">
+			<h1>Channels</h1>
+			<a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
+		</div>
+		<div class="ChatterBox_upperSubPanel">
+			<h1>Edit Message</h1>
+		</div>
+		<div class="ChatterBox_lowerSubPanel">
+			<form method="get">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search Channels" name="search" value="@ViewBag.SearchString" />
+					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+				</div>
+			</form>
+
+			<br />
+
+			@foreach (ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
+			{
+				@Html.Partial("ChannelBox", _Channel)
+			}
+		</div>
+		<div class="ChatterBox_lowerSubPanel">
+            <form asp-controller="Messages" asp-action="Edit" method="post" enctype="multipart/form-data">
+                <!-- Hidden ID -->
+                <input type="hidden" asp-for="Id" value="@Model.Id"/>
+
+                <!-- Hidden Channel ID -->
+                <input type="hidden" asp-for="ChannelId" value="@Model.ChannelId"/>
+
+                <input type="hidden" asp-for="UserId" value="@Model.UserId"/>
+
+                <!-- Message Content -->
+                <div class="form-group mb-3">
+                    <label asp-for="Content" class="form-label fw-bold">Message Content:</label>
+                    <textarea asp-for="Content" class="form-control" rows="4" maxlength="100" placeholder="Edit your message..."></textarea>
+                    <small class="text-danger">@Html.ValidationMessageFor(m => m.Content)</small>
+                </div>
+
+                <!-- Current File -->
+                @if (!string.IsNullOrEmpty(Model.FilePath) && !string.IsNullOrEmpty(Model.FileType))
+                {
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">Current Attachment:</label>
+                        @if (Model.FileType.Contains("image"))
+                        {
+                            <img src="@Model.FilePath" alt="Image" class="img-fluid rounded mb-2" style="max-width: 100%; height: auto;" />
+                        }
+                        else if (Model.FileType.Contains("video"))
+                        {
+                            <video controls class="w-100 rounded">
+                                <source src="@Model.FilePath" type="@Model.FileType" />
+                            </video>
+                        }
+                    </div>
+                }
+
+                <!-- File Upload -->
+                <div class="form-group mb-3">
+                    <label for="fileUpload" class="form-label fw-bold">Update Attachment (Optional):</label>
+                    <input type="file" name="File" id="fileUpload" class="form-control" accept="image/*,video/*" />
+                    <small class="form-text text-muted">Supported formats: Images and Videos.</small>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-around">
+                    <button type="submit" class="btn btn-primary btn-lg w-45">Save Changes</button>
+                    <a asp-controller="Channels" asp-action="Show" asp-route-_Id="@Model.ChannelId" class="btn btn-secondary btn-lg w-45">Cancel</a>
+
+                </div>
+            </form>
+		</div>
+	</div>
+</div>

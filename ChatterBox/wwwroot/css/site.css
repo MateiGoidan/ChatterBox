@@ -48,13 +48,16 @@
     }
 
 .ChatterBox_link {
+    width: 90%;
     color: white;
     font-size: 18px;
+    text-align: start;
     text-decoration: none;
 }
 
     .ChatterBox_link:hover {
         color: white;
+        background-color: #2b3c58;
     }
 
 .ChatterBox_card {
@@ -86,9 +89,10 @@
 
 .ChatterBox_leftPanel {
     background-color: #24344d;
-    display: grid;
-    grid-template-rows: 1fr 2fr 1fr;
-    grid-gap: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-between;
 }
 
 .ChatterBox_leftSubPanel {
@@ -114,6 +118,7 @@
 }
 
 .ChatterBox_lowerSubPanel {
+    max-height: calc(100vh - 8rem);
     border-left: 2px solid #d4d4d4;
     padding: 1vh 1vw;
     overflow: auto;
@@ -126,6 +131,40 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.ChatterBox-channel-link {
+    text-decoration: none;
+    display: block;
+    background-color: #ffffff;
+    color: #000000;
+    border-radius: 4px;
+    margin-bottom: 8px; 
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .ChatterBox-channel-link:hover {
+        background-color: #f8f9fa;
+        color: #212529;
+    }
+
+.ChatterBox-channel {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #ffffff;
+}
+
+.ChatterBox-channel-name {
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    color: #000000;
 }
 
 .ChatterBox_categories {

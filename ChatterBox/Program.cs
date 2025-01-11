@@ -61,27 +61,30 @@ app.MapControllerRoute(name: "UsersProfile", pattern: "Users/Show/{_Id}", defaul
 app.MapControllerRoute(name: "UsersInbox", pattern: "Users/Inbox/{Id}", defaults: new { controller = "Users", action = "Inbox"});
 app.MapControllerRoute(name: "UsersPromote", pattern: "Users/Promote/{_Id}", defaults: new { controller = "Users", action = "Promote" });
 app.MapControllerRoute(name: "UsersDemote", pattern: "Users/Demote/{_Id}", defaults: new { controller = "Users", action = "Demote" });
+app.MapControllerRoute(name: "UsersDelete", pattern: "Users/Delete/{Id}", defaults: new { controller = "Users", action = "Delete" });
 
 app.MapControllerRoute(name: "CategoriesList", pattern: "Categories/List", defaults: new { controller = "Categories", action = "List" });
 app.MapControllerRoute(name: "CategoriesNew", pattern: "Categories/New", defaults: new { controller = "Categories", action = "New" });
-app.MapControllerRoute(name: "CategoriesEdit", pattern: "Categories/Edit/{_Id}", defaults: new { controller = "Categories", action = "Edit" });
+app.MapControllerRoute(name: "CategoriesEdit", pattern: "Categories/Edit/{Id}", defaults: new { controller = "Categories", action = "Edit" });
 app.MapControllerRoute(name: "CategoriesDelete", pattern: "Categories/Delete/{_Id}", defaults: new { controller = "Categories", action = "Delete" });
 
 app.MapControllerRoute(name: "ChannelsList", pattern: "Channels/List", defaults: new { controller = "Channels", action = "List" });
 app.MapControllerRoute(name: "ChannelsShow", pattern: "Channels/Show/{_Id}", defaults: new { controller = "Channels", action = "Show" });
-app.MapControllerRoute(name: "ChannelsDisplay", pattern: "Channels/Info/{_Id}", defaults: new { controller = "Channels", action = "Display" });
+app.MapControllerRoute(name: "ChannelsDisplay", pattern: "Channels/Info/{Id}", defaults: new { controller = "Channels", action = "Display" });
 app.MapControllerRoute(name: "ChannelsNew", pattern: "Channels/New", defaults: new { controller = "Channels", action = "New" });
+app.MapControllerRoute(name: "ChannelsEdit", pattern: "Channels/Edit/{Id}", defaults: new { controller = "Channels", action = "Edit" });
 app.MapControllerRoute(name: "ChannelsRemoveMember", pattern: "Channels/RemoveMember/{Id}", defaults: new { controller = "Channels", action = "RemoveMember" });
 app.MapControllerRoute(name: "ChannelsPromote", pattern: "Channels/Promote/{Id}", defaults: new { controller = "Channels", action = "Promote" });
 app.MapControllerRoute(name: "ChannelsDemote", pattern: "Channels/Demote/{Id}", defaults: new { controller = "Channels", action = "Demote" });
+app.MapControllerRoute(name: "ChannelsDelete", pattern: "Channels/Delete/{Id}", defaults: new { controller = "Channels", action = "Delete" });
 
 app.MapControllerRoute(name: "RequestsNew", pattern: "Requests/New", defaults: new { controller = "Requests", action = "New" });
 app.MapControllerRoute(name: "RequestsAccept", pattern: "Requests/Accept/{Id}", defaults: new { controller = "Requests", action = "Accept" });
-app.MapControllerRoute(name: "RequestsAccept", pattern: "Requests/Decline/{Id}", defaults: new { controller = "Requests", action = "Decline" });
+app.MapControllerRoute(name: "RequestsDecline", pattern: "Requests/Decline/{Id}", defaults: new { controller = "Requests", action = "Decline" });
 app.MapControllerRoute(name: "RequestsDelete", pattern: "Requests/Delete/{Id}", defaults: new { controller = "Requests", action = "Delete" });
 
 app.MapControllerRoute(name: "MessagesNew", pattern: "Messages/New", defaults: new { controller = "Messages", action = "New" });
-app.MapControllerRoute(name: "MessagesEdit", pattern: "Messages/Edit/{_Id}", defaults: new { controller = "Messages", action = "Edit" });
+app.MapControllerRoute(name: "MessagesEdit", pattern: "Messages/Edit/{Id}", defaults: new { controller = "Messages", action = "Edit" });
 app.MapControllerRoute(name: "MessagesDelete", pattern: "Messages/Delete/{_Id}", defaults: new { controller = "Messages", action = "Delete" });
 
 app.MapRazorPages();

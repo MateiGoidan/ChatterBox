@@ -7,7 +7,7 @@
 @{
 	string? UserId = MyUserManager.GetUserId(User);
 
-	string Role = MyUserManager.GetRolesAsync(MyUserManager.GetUserAsync(User).Result).Result.First().ToString();
+    string Role = MyUserManager.GetRolesAsync(MyUserManager.GetUserAsync(User).Result).Result.First().ToString();
 }
 
 <div class="ChatterBox_sitecard">
@@ -43,17 +43,15 @@
 			}
 		</div>
 
-		<div class="d-flex flex-column ChatterBox_lowerSubPanel">
-			<div class="flex-grow-1 overflow-auto text-center" style="max-height: calc(50vh - 150px);">
-				<h2 class="mb-0">@Model.Name</h2>
-
-				@if (Model.Category != null)
-				{
-					<p><small style="color: #4c5c75">@Model.Category.Title</small></p>
-				}
-
-				<p class="fst-italic">@Model.Description</p>
-			</div>
+        <div class="d-flex flex-column ChatterBox_lowerSubPanel">
+            <div class="flex-grow-1 overflow-auto text-center" style="max-height: calc(50vh - 150px);">
+                <h2 class="mb-0" style="font-weight: bold; color: #333;">@Model.Name</h2>
+                @if (Model.Category != null)
+                {
+                    <p><small style="color: #4c5c75">@Model.Category.Title</small></p>
+                }
+                <p class="fst-italic">@Model.Description</p>
+            </div>
 
 			<hr />
 
@@ -80,47 +78,51 @@
 							_UserName = _UserName.Split("@")[0];
 							_UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
 
-							<div class="d-flex flex-row justify-content-between align-items-center flex-wrap card p-2 mb-2" style="width: 25vw;">
-								<div class="flex-grow-1">
-                                    <span class="fw-bold">@_UserName</span>
-                                    @if (_Bind.Role == "Admin")
+                            <div class="card p-2 mb-2" style="width: 25vw;">
+                                <div class="d-flex flex-row justify-content-between align-items-center flex-wrap">
+                                    <div class="flex-grow-1">
+                                        <span class="fw-bold">@_UserName</span>
+                                        @if (_Bind.Role == "Admin")
+                                        {
+                                            <small class="ms-1 badge rounded-pill bg-success">Admin</small>
+                                        }
+                                        else if (_Bind.Role == "Moderator")
+                                        {
+                                            <small class="ms-1 badge rounded-pill bg-danger">Mod</small>
+                                        }
+                                    </div>
+
+                                    @if (_Bind.UserId != UserId && ((ViewBag.UserRole == "Moderator" && _Bind.Role != "Admin") || ViewBag.UserRole == "Admin" || Role == "Admin"))
                                     {
-										<small class="ms-1 badge rounded-pill bg-success">Admin</small>
-									}
-									else if (_Bind.Role == "Moderator")
-									{
-										<small class="ms-1 badge rounded-pill bg-danger">Mod</small>
-									}
-								</div>
+                                        <a class="bi bi-three-dots-vertical ChatterBox_link" style="color: black" data-bs-toggle="collapse" href="@($"#collapseForm{_BindUser.Id}")" role="button" aria-expanded="false" aria-controls="@($"collapseForm{@Model.Id}")"></a>
+                                    }
+                                </div>
 
-								<div>
-									@if (_Bind.Role != "Admin" && (ViewBag.UserRole == "Admin" || Role == "Admin"))
-									{
-										<form asp-controller="Channels" asp-action="Promote" asp-route-Id="@Model.Id" method="post">
-											<input type="hidden" name="UserId" value="@_Bind.UserId" />
-											<button class="btn btn-primary btn-sm me-1" style="font-size: 1rem;" aria-label="Promote Member" type="submit">Promote</button>
-										</form>
-									}
-								</div>
+                                <div class="collapse" id="@($"collapseForm{_BindUser.Id}")" style="margin: 0.3rem 0 0.5rem 0">
+                                    <div class="d-flex justify-content-end align-items-center flex-wrap">
+                                        @if (_Bind.Role != "Admin" && (ViewBag.UserRole == "Admin" || Role == "Admin"))
+                                        {
+                                            <form asp-controller="Channels" asp-action="Promote" asp-route-Id="@Model.Id" method="post">
+                                                <input type="hidden" name="UserId" value="@_Bind.UserId" />
+                                                <button class="btn btn-primary btn-sm me-1" style="font-size: 1rem;" aria-label="Promote Member" type="submit">Promote</button>
+                                            </form>
+                                        }
 
-								<div>
-									@if (_Bind.Role != "Member" && (ViewBag.UserRole == "Admin" || Role == "Admin"))
-									{
-										<form asp-controller="Channels" asp-action="Demote" asp-route-Id="@Model.Id" method="post">
-											<input type="hidden" name="UserId" value="@_Bind.UserId" />
-											<button class="btn btn-warning btn-sm" style="font-size: 1rem;" aria-label="Demote Member" type="submit">Demote</button>
-										</form>
-									}
-								</div>
+                                        @if (_Bind.Role != "Member" && (ViewBag.UserRole == "Admin" || Role == "Admin"))
+                                        {
+                                            <form asp-controller="Channels" asp-action="Demote" asp-route-Id="@Model.Id" method="post">
+                                                <input type="hidden" name="UserId" value="@_Bind.UserId" />
+                                                <button class="btn btn-warning btn-sm" style="font-size: 1rem;" aria-label="Demote Member" type="submit">Demote</button>
+                                            </form>
+                                        }
 
-								@if (_Bind.UserId != UserId && ((ViewBag.UserRole == "Moderator" && _Bind.Role != "Admin") || ViewBag.UserRole == "Admin" || Role == "Admin"))
-								{
-									<form asp-controller="Channels" asp-action="RemoveMember" asp-route-Id="@Model.Id" method="post">
-										<input type="hidden" name="UserId" value="@_Bind.UserId" />
-										<button class="btn btn-danger btn-sm ms-1" style="font-size: 1rem;" aria-label="Kick Member" type="submit">Kick</button>
-									</form>
-								}
-							</div>
+                                        <form asp-controller="Channels" asp-action="RemoveMember" asp-route-Id="@Model.Id" method="post">
+                                            <input type="hidden" name="UserId" value="@_Bind.UserId" />
+                                            <button class="btn btn-danger btn-sm ms-1" style="font-size: 1rem;" aria-label="Kick Member" type="submit">Kick</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
 						}
 					</div>
 				</div>
@@ -210,29 +212,29 @@
 						</div>
 					}
 				</div>
-
 			</div>
 
 			<hr />
 
 			<div class="d-flex flex-collumn flex-wrap justify-content-around">
-
-				@if (ViewBag.UserRole != "Member")
+				@if (ViewBag.UserRole == "Admin")
 				{
-					<button class="btn btn-dark ChatterBox_btn_light" asp-controller="Channels" asp-action="Edit" asp-route-_Id="@Model.Id">Edit</button>
-				}
+					<form asp-controller="Channels" asp-action="Edit" asp-route-Id="@Model.Id" method="get">
+						<button class="btn btn-dark ChatterBox_btn_light" type="submit">Edit</button>
+					</form>
+                }
 
 				<form asp-controller="Channels" asp-action="RemoveMember" asp-route-Id="@Model.Id" method="post">
-
 					<input type="hidden" name="UserId" value="@UserId" />
 
 					<button class="btn btn-danger" type="submit">Leave</button>
-
 				</form>
 
-				@if (ViewBag.UserRole != "Member")
+				@if (ViewBag.UserRole == "Admin" || Role == "Admin")
 				{
-					<button class="btn btn-dark ChatterBox_btn_light" asp-controller="Channels" asp-action="Delete" asp-route-_Id="@Model.Id">Edit</button>
+					<form asp-controller="Channels" asp-action="Delete" asp-route-Id="@Model.Id" method="post">
+                        <button class="btn btn-danger" type="submit">Delete</button>
+                    </form>
 				}
 			</div>
 		</div>

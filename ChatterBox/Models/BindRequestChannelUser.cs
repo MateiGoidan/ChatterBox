@@ -6,7 +6,7 @@ namespace ChatterBox.Models
 	{
 		public int ChannelId { get; set; }
 
-		public string? UserId { get; set; }
+		public required string UserId { get; set; }
 
 		public int RequestId { get; set; }
 

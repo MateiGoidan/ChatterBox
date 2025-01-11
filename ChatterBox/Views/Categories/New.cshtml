@@ -33,23 +33,19 @@
         </div>
         <div class="ChatterBox_lowerSubPanel">
             <form asp-controller="Categories" asp-action="New" method="post">
+                <h2 class="text-center mb-4" style="font-weight: bold; color: #333;">Create a New Category</h2>
 
-                <h3>Create a new category!</h3>
-
-                <br />
-
-                <div class="form-group">
-                    @Html.Label("Title", "Title: ")
-                    @Html.Editor("Title")
-                    <br />
-                    @Html.ValidationMessageFor(c => c.Title, "", new { @class = "text-danger" })
+                <!-- Category Title-->
+                <div class="form-group mb-3">
+                    <label for="Title" class="form-label fw-bold">Category Title:</label>
+                    <input type="text" id="Title" name="Title" class="form-control" placeholder="Enter category name" required />
+                    <small class="text-danger">@Html.ValidationMessageFor(c => c.Title)</small>
                 </div>
 
-                <br />
-
-                <div class="flex-column">
-                    <button class="btn btn-dark ChatterBox_btn_light" style="font-size:20px; margin-right: 1vw;" type="submit">Done</button>
-                    <button class="btn btn-danger ChatterBox_btn_del" asp-controller="Categories" asp-action="List">Cancel</button>
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-around flex-wrap mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Create Category</button>
+                    <a asp-controller="Categories" asp-action="List" class="btn btn-secondary btn-lg">Cancel</a>
                 </div>
             </form>
         </div>

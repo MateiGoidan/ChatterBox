@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ChatterBox.Controllers
 {
@@ -87,22 +88,47 @@ namespace ChatterBox.Controllers
 			}
 		}
 
-		[Authorize(Roles = "User, Admin")]
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
-		public IActionResult Delete(string _Id)
+		public IActionResult Delete(string Id)
 		{
-			ApplicationUser? _DeleteUser = MyDataBase.AppUsers.Find(_Id);
-
-			string _RedirectAction = "List";
+			ApplicationUser? _DeleteUser = MyDataBase.AppUsers
+				.Include(u => u.BindChannelUsers)
+				.Include(u => u.BindRequestChannelUsers)
+				.FirstOrDefault(u => u.Id == Id);
 
 			if (_DeleteUser == null)
 			{
 				return View("Error", new ErrorViewModel { RequestId = "Delete attempt on non existing user!" });
 			}
 
+			// Get all the Channels where the user is the only Admin
+			List<Channel> _RemoveChannels = MyDataBase.Channels
+				.Include(c => c.BindChannelUser)
+				.Where(c => c.BindChannelUser.Any(b => b.UserId == Id && b.Role == "Admin")
+				&& c.BindChannelUser.Count(b => b.Role == "Admin") == 1)
+				.ToList();
+
+			// Get all the request of the User
+			List<Request> _RemoveRequests = MyDataBase.BindRequestChannelUserEntries
+				.Where(b => b.UserId == Id)
+				.Select(b => b.Request!)
+				.Where(r => r != null)
+				.ToList();
+
 			try
 			{
 				MyDataBase.AppUsers.Remove(_DeleteUser);
+
+				foreach (Channel _Channel in _RemoveChannels)
+				{
+					MyDataBase.Channels.Remove(_Channel);
+				}
+
+				foreach (Request _Request in _RemoveRequests)
+				{
+					MyDataBase.Requests.Remove(_Request);
+				}
 
 				MyDataBase.SaveChanges();
 

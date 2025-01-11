@@ -148,13 +148,14 @@ namespace ChatterBox.Controllers
 			}
 		}
 
-		public IActionResult Edit(int _Id)
+		[Authorize(Roles = "Admin")]
+		public IActionResult Edit(int Id)
 		{
 			GetChannels();
 
 			try
 			{
-				return View(MyDataBase.Categories.Find(_Id));
+				return View(MyDataBase.Categories.Find(Id));
 			}
 			catch
 			{
@@ -162,28 +163,29 @@ namespace ChatterBox.Controllers
 			}
 		}
 
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
-		public IActionResult Edit(int _Id, Category _Category)
+		public IActionResult Edit(int Id, Category Category)
 		{
-			_Category.Id = _Id;
+			Category.Id = Id;
 
-			Category? _OriginalCategory = MyDataBase.Categories.Find(_Id);
-
-			ViewBag.CategoryTitle = _OriginalCategory.Title;
+			Category? _OriginalCategory = MyDataBase.Categories.Find(Id);
 
 			if (_OriginalCategory == null)
 			{
 				return View("Error", new ErrorViewModel { RequestId = "Edit attempt on non existing category!" });
 			}
 
+			ViewBag.CategoryTitle = _OriginalCategory.Title;
+
 			if (!ModelState.IsValid)
 			{
-				return View(_Category);
+				return View(Category);
 			}
 
 			try
 			{
-				_OriginalCategory.Title = _Category.Title;
+				_OriginalCategory.Title = Category.Title;
 
 				MyDataBase.SaveChanges();
 
@@ -197,6 +199,7 @@ namespace ChatterBox.Controllers
 			}
 		}
 
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public IActionResult Delete(int _Id)
 		{

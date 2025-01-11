@@ -15,7 +15,7 @@
 		</div>
 		<div class="ChatterBox_upperSubPanel">
 			<h1>@Model.Name</h1>
-			<a class="bi bi-three-dots-vertical ChatterBox_btn_icon" asp-controller="Channels" asp-action="Display" asp-route-_Id="@Model.Id"></a>
+			<a class="bi bi-three-dots-vertical ChatterBox_btn_icon" asp-controller="Channels" asp-action="Display" asp-route-Id="@Model.Id"></a>
 		</div>
 		<div class="ChatterBox_lowerSubPanel"> 
 			<form method="get">
@@ -37,15 +37,23 @@
 			<div id="messages-container" class="d-flex flex-column flex-grow-1 overflow-auto" style="max-height: calc(90vh - 100px);">
 				@foreach (Message _Message in ViewBag.ChatMessages)
 				{
-					@Html.Partial("MessageBubble", _Message)
+                    <partial name="MessageBubble" model="_Message" />
 				}
 			</div>
-			<div style="text-align: center;">
-				<form asp-controller="Messages" asp-action="New" method="post" enctype="multipart/form-data">
+			<div class="p-1">
+				<form asp-controller="Messages" asp-action="New" method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
 					<input type="hidden" name="_Message.ChannelId" value="@Model.Id" />
-					@Html.TextBox("_Message.Content")
-					<input type="file" name="_File" />
-					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Send</button>
+
+					<input type="text" name="_Message.Content" class="form-control flex-grow-1" rows="1" placeholder="Type your message..." maxlength="500"></input>
+
+					<label for="fileUpload" class="btn btn-outline-secondary" style="cursor: pointer; margin: 0;">
+						<i class="bi bi-paperclip"></i>
+						<input type="file" name="_File" id="fileUpload" class="d-none" accept="image/*,video/*" />
+					</label>
+
+					<button class="btn btn-primary" type="submit">
+						<i class="bi bi-send"></i>
+					</button>
 				</form>
 			</div>
 		</div>

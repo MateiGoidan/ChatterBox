@@ -11,7 +11,7 @@ namespace ChatterBox.Models
 		[Required]
 		public string? Role { get; set; }
 
-		public virtual Channel? Channel { get; set; }
+		public virtual Channel Channel { get; set; }
 
 		public virtual ApplicationUser? User { get; set; }
 	}

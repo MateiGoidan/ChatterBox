@@ -1,8 +1,8 @@
 ﻿@model ChatterBox.Models.Channel
 
-<a href="/Channels/Show/@Model.Id" style="text-decoration: none; background-color: black;">
-    <div class="d-flex justify-content-start">
-        <i class="bi bi-chat" style="margin-right: 10px"></i>
-        <p>@Model.Name</p>
+<a asp-controller="Channels" asp-action="Show" asp-route-_Id="@Model.Id" class="ChatterBox-channel-link">
+    <div class="d-flex align-items-center px-3 py-2 ChatterBox-channel">
+        <i class="bi bi-chat me-2 fs-4"></i>
+        <span class="ChatterBox-channel-name text-truncate">@Model.Name</span>
     </div>
 </a>

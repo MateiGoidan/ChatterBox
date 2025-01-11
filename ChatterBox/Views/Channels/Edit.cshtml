@@ -1,27 +1,74 @@
-<h2>Editare canal</h2>
+@using ChatterBox.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> MyUserManager
 
-<form method="post" action="/Channels/Edit/@ViewBag.Channel.Id">
-   
-    <label>Titlu canal</label>
-    <br />
+@model Channel 
 
-    <input type="text" name="Title" value="@ViewBag.Channel.Title" />
-    <br /><br />
+<div class="ChatterBox_sitecard">
 
-    <label>Continut canal</label>
-    <br />
+	@* @Html.Partial("SideBar", MyUserManager.GetUserAsync(User).Result) *@
 
-    <input type="text" name="Content" value="@ViewBag.Channel.Content" />
-    <br /><br />
+    <partial name="SideBar" model="MyUserManager.GetUserAsync(User).Result" />
 
-    <label>Data</label>
-    <br />
+	<div class="ChatterBox_rightPanel">
+		<div class="ChatterBox_upperSubPanel">
+			<h1>Channels</h1>
+			<a class="bi bi-plus-lg ChatterBox_btn_icon" asp-controller="Channels" asp-action="New"></a>
+		</div>
+		<div class="ChatterBox_upperSubPanel">
+			<h1>Edit Channel</h1>
+		</div>
+		<div class="ChatterBox_lowerSubPanel">
+			<form method="get">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search Channels" name="search" value="@ViewBag.SearchString" />
+					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+				</div>
+			</form>
 
-    <input type="text" name="Date" value="@ViewBag.Channel.Date" />
-    <br />
+			<br />
 
-    <button type="submit" class="btn btn-info">Modifica canal</button>
+			@foreach (ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
+			{
+				@Html.Partial("ChannelBox", _Channel)
+			}
+		</div>
+		<div class="ChatterBox_lowerSubPanel">
+			<form asp-controller="Channels" asp-action="Edit" asp-route-Id="@Model.Id" method="post">
+				<h2 class="text-center mb-4" style="font-weight: bold; color: #333;">Edit @Model.Name</h2>
 
-</form>
+				<!-- Channel Name -->
+				<div class="form-group mb-3">
+					<label for="Name" class="form-label fw-bold">Channel Name:</label>
+					<input type="text" id="Name" name="Name" class="form-control" value="@Model.Name" placeholder="Enter new title" required />
+					<small class="text-danger">@Html.ValidationMessageFor(c => c.Name)</small>
+				</div>
 
+				<!-- Channel Description -->
+				<div class="form-group mb-3">
+					<label for="Description" class="form-label fw-bold">Description:</label>
+					<textarea asp-for="Description" id="Description" class="form-control" rows="4" placeholder="Enter a brief description of the channel"></textarea>
+					<small class="text-danger">@Html.ValidationMessageFor(c => c.Description)</small>
+				</div>
 
+				<!-- Category Dropdown -->
+				<div class="form-group mb-4">
+					<label for="CategoryId" class="form-label fw-bold">Select a Category:</label>
+					<select asp-for="CategoryId" id="CategoryId" class="form-control">
+						<option value="" disabled selected>Choose a category...</option>
+						@foreach (var _Category in ViewBag.CategoriesList)
+						{
+							<option value="@_Category.Value">@_Category.Text</option>
+						}
+					</select>
+					<small class="text-danger">@Html.ValidationMessageFor(c => c.CategoryId)</small>
+				</div>
+
+				<div class="d-flex justify-content-around">
+					<button class="btn btn-primary btn-lg w-45" type="submit">Save Changes</button>
+					<a asp-controller="Channel" asp-action="Display" asp-route-Id="@Model.Id" class="btn btn-secondary btn-lg w-45">Cancel</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

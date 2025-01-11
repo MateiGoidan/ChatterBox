@@ -118,44 +118,36 @@ namespace ChatterBox.Controllers
 		}
 
 		[Authorize(Roles = "Admin, User")]
-		public IActionResult Edit(int _Id)
+		public IActionResult Edit(int Id)
 		{ 
-			Message? _Message = MyDataBase.Messages.Find(_Id);
+			Message? _Message = MyDataBase.Messages.Find(Id);
 
 			if (_Message == null)
 			{
 				return View("Error", new ErrorViewModel { RequestId = "Edit attempt on none existing message."});
 			}
 
-			if (_Message.UserId != MyUserManager.GetUserId(User))
-			{
-				return View("Error", new ErrorViewModel { RequestId = "Access denied!" });
-			}
+			GetChannels();
 
 			return View(_Message);
 		}
 
 		[Authorize(Roles = "Admin, User")]
 		[HttpPost]
-		public IActionResult Edit(int _Id, Message _Message, IFormFile? _File)
+		public IActionResult Edit(int Id, Message Message, IFormFile? File)
 		{
-			Message _OriginalMesage = MyDataBase.Messages.Find(_Id);
+			Message _OriginalMesage = MyDataBase.Messages.Find(Id);
 
 			if(_OriginalMesage == null)
 			{
 				return View("Error", new ErrorViewModel { RequestId = "Edit attempt on none existing message." });
 			}
 
-			if(_OriginalMesage.UserId != MyUserManager.GetUserId(User))
-			{
-				return View("Error", new ErrorViewModel { RequestId = "Access denied!" });
-			}
+			Message.UserId = _OriginalMesage.UserId;
 
-			_Message.UserId = _OriginalMesage.UserId;
-
-			if(_File != null)
+			if(File != null)
 			{
-				if (_File.Length == 0)
+				if (File.Length == 0)
 				{
 					return View("Error", new ErrorViewModel { RequestId = "No empty files allowed here!" });
 				}
@@ -167,23 +159,23 @@ namespace ChatterBox.Controllers
 						Directory.CreateDirectory(Path.Combine(MyHostingEnvironment.WebRootPath, "media"));
 					}
 
-					string _FileName = BitConverter.ToString(System.Security.Cryptography.SHA256.Create().ComputeHash(_File.OpenReadStream())).Replace("-", "").ToLowerInvariant() + Path.GetExtension(_File.FileName);
+					string _FileName = BitConverter.ToString(System.Security.Cryptography.SHA256.Create().ComputeHash(File.OpenReadStream())).Replace("-", "").ToLowerInvariant() + Path.GetExtension(File.FileName);
 
 					FileStream _FileStream = new FileStream(Path.Combine(MyHostingEnvironment.WebRootPath, "media", _FileName), FileMode.Create);
 
-					_File.CopyTo(_FileStream);
+					File.CopyTo(_FileStream);
 
 					_FileStream.Close();
 
-					if (_File.ContentType.Contains("image"))
+					if (File.ContentType.Contains("image"))
 					{
-						_Message.FilePath = "/media/" + _FileName;
-						_Message.FileType = "image/" + Path.GetExtension(_FileName).Remove(0, 1);
+						Message.FilePath = "/media/" + _FileName;
+						Message.FileType = "image/" + Path.GetExtension(_FileName).Remove(0, 1);
 					}
-					else if (_File.ContentType.Contains("video"))
+					else if (File.ContentType.Contains("video"))
 					{
-						_Message.FilePath = "/media/" + _FileName;
-						_Message.FileType = "video/" + Path.GetExtension(_FileName).Remove(0, 1);
+						Message.FilePath = "/media/" + _FileName;
+						Message.FileType = "video/" + Path.GetExtension(_FileName).Remove(0, 1);
 					}
 					else
 					{
@@ -197,23 +189,27 @@ namespace ChatterBox.Controllers
 			}
 
 			ModelState.Clear();
-			TryValidateModel(_Message);
-			if (!ModelState.IsValid || (_Message.Content == null && _File == null))
+			TryValidateModel(Message);
+			if (!ModelState.IsValid || (Message.Content == null && File == null))
 			{
-				return Redirect("/Channels/Show/" + _Message.ChannelId);
+				return Redirect("/Channels/Show/" + Message.ChannelId);
 			}
+
+			GetChannels();
 
 			try
 			{
-				MyDataBase.Messages.Add(_Message);
+				_OriginalMesage.Content = Message.Content;
+				_OriginalMesage.FilePath = Message.FilePath;
+				_OriginalMesage.FileType = Message.FileType;
 
 				MyDataBase.SaveChanges();
 
-				return Redirect("/Channels/Show/" + _Message.ChannelId);
+				return Redirect("/Channels/Show/" + Message.ChannelId);
 			}
 			catch
 			{
-				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to add a message. Please contact the dev team in order to resolve this issue." });
+				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to edit a message. Please contact the dev team in order to resolve this issue." });
 			}
 		}
 
@@ -235,11 +231,6 @@ namespace ChatterBox.Controllers
 				&& b.UserId == MyUserManager.GetUserId(User))
 				.ToQueryString();
 
-			if (_Message.UserId != MyUserManager.GetUserId(User) || _Role == "Admin" || _Role == "Moderator")
-			{
-				return View("Error", new ErrorViewModel { RequestId = "Access denied!" });
-			}
-
 			try
 			{
 				MyDataBase.Messages.Remove(_Message);
@@ -252,6 +243,42 @@ namespace ChatterBox.Controllers
 			{
 				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to delete the message. Please contact the dev team in order to resolve this issue." });
 			}
+		}
+
+		[NonAction]
+		public void GetChannels()
+		{
+			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
+				.Where(b => b.UserId == MyUserManager.GetUserId(User))
+				.ToList();
+
+			List<int> _ChannelsIds = new List<int>();
+			foreach (BindChannelUser _Bind in _BindChannelUser)
+			{
+				_ChannelsIds.Add(_Bind.ChannelId);
+			}
+
+			string _Search = "";
+
+			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["search"])))
+			{
+				_Search = Convert.ToString(Request.Query["Search"]);
+
+				_ChannelsIds = MyDataBase.Channels
+					.Where(c => (c.Name.ToUpper().Contains(_Search.ToUpper()) ||
+					c.Description.ToUpper().Contains(_Search.ToUpper())) && 
+					_ChannelsIds.Contains(c.Id))
+					.Select(c => c.Id)
+					.ToList();
+			}
+
+			var _Channels = MyDataBase.Channels
+				.Where(c => _ChannelsIds.Contains(c.Id))
+				.ToList();
+
+			ViewBag.SearchString = _Search;
+
+			ViewBag.UserChannels = _Channels;
 		}
 	}
 }

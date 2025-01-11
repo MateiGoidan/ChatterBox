@@ -9,12 +9,12 @@ namespace ChatterBox.Models
 
 		[Required(ErrorMessage = "Channels are required to have a name!")]
 		[MinLength(3, ErrorMessage = "Channel name must contain at least 3 characters!")]
-		[MaxLength(20, ErrorMessage = "Channel name must contain at most 20 characters!")]
+		[StringLength(20, ErrorMessage = "Channel name must contain at most 20 characters!")]
 		public string? Name { get; set; }
 
 		[Required(ErrorMessage = "Channels are required to have a description!")]
 		[MinLength(3, ErrorMessage = "Channel description must contain at least 3 characters!")]
-		[MaxLength(50, ErrorMessage = "Channel description must contain at most 50 characters!")]
+		[StringLength(200, ErrorMessage = "Channel description must contain at most 100 characters!")]
 		public string? Description { get; set; }
 
 		[Required(ErrorMessage = "Channels are required to have a category!")]

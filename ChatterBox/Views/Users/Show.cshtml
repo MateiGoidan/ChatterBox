@@ -21,16 +21,12 @@
 		</div>
 		<div class="ChatterBox_upperSubPanel">
 			<h1>User Information</h1>
-
-			<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { AreaAttribute = "" })">
-				<button type="submit" class="bi bi-box-arrow-right ChatterBox_btn_icon"></button>
-			</form>
 		</div>
 		<div class="ChatterBox_lowerSubPanel">
 			<form method="GET">
 				<div class="input-group">
 					<input type="text" class="form-control" placeholder="Search Channels" name="search"
-						   value="@ViewBag.SearchString">
+					value="@ViewBag.SearchString">
 					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
 				</div>
 			</form>
@@ -43,23 +39,46 @@
 			}
 		</div>
 		<div class="ChatterBox_lowerSubPanel">
-			<h2>About</h2>
+			<h2 class="text-center mb-4" style="font-weight: bold; color: #333;">About You</h2>
 
-			<hr />
+			<hr class="mb-4" />
 
-			<p><strong>Username:</strong> <span>@_UserName</span></p>
+			<!-- Username -->
+			<div class="mb-3">
+				<p class="mb-1"><strong>Username:</strong></p>
+				<p class="ps-3 text-muted" style="font-size: 1.1rem;">@_UserName</p>
+			</div>
 
-			<p><strong>Email:</strong> <span>@Model.Email</span></p>
+			<!-- Email -->
+			<div class="mb-3">
+				<p class="mb-1"><strong>Email:</strong></p>
+				<p class="ps-3 text-muted" style="font-size: 1.1rem;">@Model.Email</p>
+			</div>
 
-			@if (User.IsInRole("Admin"))
+			<!-- Role -->
+			<div class="mb-3">
+				<p class="mb-1"><strong>Role:</strong></p>
+				@if (User.IsInRole("Admin"))
+				{
+					<p class="ps-3 text-success fw-bold" style="font-size: 1.1rem;">Admin</p>
+				}
+				else
+				{
+					<p class="ps-3 text-primary fw-bold" style="font-size: 1.1rem;">User</p>
+				}
+			</div>
+
+			<hr class="mt-4 mb-4" />
+
+			<!-- Action Buttons -->
+			@if (Model.Id == MyUserManager.GetUserId(User))
 			{
-				<p><strong>Role:</strong> Admin</p>
+				<div class="d-flex justify-content-center flex-wrap gap-3">
+					<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { AreaAttribute = "" })" style="display: inline-block;">
+						<button class="btn btn-danger btn-lg w-100">Logout</button>
+					</form>
+				</div>
 			}
-			else
-			{
-				<p><strong>Role:</strong> User</p>
-			}
-
 		</div>
 	</div>
 </div>

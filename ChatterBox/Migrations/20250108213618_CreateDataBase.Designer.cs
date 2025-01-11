@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ChatterBox.Data.Migrations
+namespace ChatterBox.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241210172911_CreatedDataBase")]
-    partial class CreatedDataBase
+    [Migration("20250108213618_CreateDataBase")]
+    partial class CreateDataBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,6 +109,30 @@ namespace ChatterBox.Data.Migrations
                     b.ToTable("BindChannelUserEntries");
                 });
 
+            modelBuilder.Entity("ChatterBox.Models.BindRequestChannelUser", b =>
+                {
+                    b.Property<int>("ChannelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ChannelId", "UserId", "RequestId");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BindRequestChannelUserEntries");
+                });
+
             modelBuilder.Entity("ChatterBox.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -155,48 +179,6 @@ namespace ChatterBox.Data.Migrations
                     b.ToTable("Channels");
                 });
 
-            modelBuilder.Entity("ChatterBox.Models.ChannelRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChannelId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ProcessedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RequestType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RequesterId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TargetUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChannelId");
-
-                    b.HasIndex("RequesterId");
-
-                    b.HasIndex("TargetUserId");
-
-                    b.ToTable("ChannelRequests");
-                });
-
             modelBuilder.Entity("ChatterBox.Models.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -234,6 +216,29 @@ namespace ChatterBox.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("ChatterBox.Models.Request", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RequestType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Requests");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -392,6 +397,33 @@ namespace ChatterBox.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ChatterBox.Models.BindRequestChannelUser", b =>
+                {
+                    b.HasOne("ChatterBox.Models.Channel", "Channel")
+                        .WithMany("BindRequestChannelUser")
+                        .HasForeignKey("ChannelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChatterBox.Models.Request", "Request")
+                        .WithMany("BindRequestChannelUsers")
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChatterBox.Models.ApplicationUser", "User")
+                        .WithMany("BindRequestChannelUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Channel");
+
+                    b.Navigation("Request");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ChatterBox.Models.Channel", b =>
                 {
                     b.HasOne("ChatterBox.Models.Category", "Category")
@@ -401,29 +433,6 @@ namespace ChatterBox.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("ChatterBox.Models.ChannelRequest", b =>
-                {
-                    b.HasOne("ChatterBox.Models.Channel", "Channel")
-                        .WithMany()
-                        .HasForeignKey("ChannelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ChatterBox.Models.ApplicationUser", "Requester")
-                        .WithMany()
-                        .HasForeignKey("RequesterId");
-
-                    b.HasOne("ChatterBox.Models.ApplicationUser", "TargetUser")
-                        .WithMany()
-                        .HasForeignKey("TargetUserId");
-
-                    b.Navigation("Channel");
-
-                    b.Navigation("Requester");
-
-                    b.Navigation("TargetUser");
                 });
 
             modelBuilder.Entity("ChatterBox.Models.Message", b =>
@@ -500,6 +509,8 @@ namespace ChatterBox.Data.Migrations
                 {
                     b.Navigation("BindChannelUsers");
 
+                    b.Navigation("BindRequestChannelUsers");
+
                     b.Navigation("Messages");
                 });
 
@@ -512,7 +523,14 @@ namespace ChatterBox.Data.Migrations
                 {
                     b.Navigation("BindChannelUser");
 
+                    b.Navigation("BindRequestChannelUser");
+
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("ChatterBox.Models.Request", b =>
+                {
+                    b.Navigation("BindRequestChannelUsers");
                 });
 #pragma warning restore 612, 618
         }

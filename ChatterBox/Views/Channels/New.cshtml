@@ -5,12 +5,12 @@
 @model Channel
 
 @{
-    ApplicationUser? applicationUser = MyUserManager.GetUserAsync(User).Result;
+	ApplicationUser? _User = MyUserManager.GetUserAsync(User).Result;
 }
 
 <div class="ChatterBox_sitecard">
 
-	@Html.Partial("SideBar", applicationUser)
+	@Html.Partial("SideBar", _User)
 
 	<div class="ChatterBox_rightPanel">
 		<div class="ChatterBox_upperSubPanel">
@@ -23,54 +23,53 @@
 		<div class="ChatterBox_lowerSubPanel">
 			<form method="get">
 				<div class="input-group">
-					<input type="text" class="form-control" placeholder="Search Channels" name="search" value="@ViewBag.SearchString"/>
-                    <button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
+					<input type="text" class="form-control" placeholder="Search Channels" name="search" value="@ViewBag.SearchString" />
+					<button class="btn btn-dark ChatterBox_btn_light" type="submit">Search</button>
 				</div>
 			</form>
 
 			<br />
 
-			@foreach(ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
+			@foreach (ChatterBox.Models.Channel _Channel in ViewBag.UserChannels)
 			{
 				@Html.Partial("ChannelBox", _Channel)
 			}
 		</div>
 		<div class="ChatterBox_lowerSubPanel">
 			<form asp-controller="Channels" asp-action="New" method="post">
+				<h2 class="text-center mb-4">Create a New Channel</h2>
 
-				<h3>Create a new channel!</h3>
-
-				<br />
-
-				<div class="form-group">
-					@Html.Label("Name", "Name: ")
-					@Html.Editor("Name")
-					<br />
-					@Html.ValidationMessageFor(c => c.Name, "", new { @class = "text-danger" })
+				<!-- Channel Name -->
+				<div class="form-group mb-3">
+					<label for="Name" class="form-label fw-bold">Channel Name:</label>
+					<input type="text" id="Name" name="Name" class="form-control" placeholder="Enter channel name" required />
+					<small class="text-danger">@Html.ValidationMessageFor(c => c.Name)</small>
 				</div>
 
-				<br />
-
-				<div class="form-group">
-					@Html.Label("Description", "Description: ")
-					<br />
-                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-					@Html.ValidationMessage("Description", null, new { @class = "text-danger" })
+				<!-- Channel Description -->
+				<div class="form-group mb-3">
+					<label for="Description" class="form-label fw-bold">Description:</label>
+					<textarea asp-for="Description" id="Description" class="form-control" rows="4" placeholder="Enter a brief description of the channel" required></textarea>
+					<small class="text-danger">@Html.ValidationMessageFor(c => c.Description)</small>
 				</div>
 
-				<br />
-
-				<div class="form-group">
-					@Html.Label("CategoryId", "Select Category: ")
-					@Html.DropDownListFor(c => c.CategoryId, new SelectList(ViewBag.CategoriesList, "Value", "Text"), "None", new { @class = "form-control" })
-					@Html.ValidationMessage("CategoryId", null, new { @class = "text-danger" })
+				<!-- Category Dropdown -->
+				<div class="form-group mb-4">
+					<label for="CategoryId" class="form-label fw-bold">Select a Category:</label>
+					<select asp-for="CategoryId" id="CategoryId" class="form-control" required>
+						<option value="" disabled selected>Choose a category...</option>
+						@foreach (var _Category in ViewBag.CategoriesList)
+						{
+							<option value="@_Category.Value">@_Category.Text</option>
+						}
+					</select>
+					<small class="text-danger">@Html.ValidationMessageFor(c => c.CategoryId)</small>
 				</div>
 
-				<br />
-
-				<div class="flex-column">
-					<button class="btn btn-dark ChatterBox_btn_light" style="font-size:20px; margin-right: 1vw;" type="submit">Done</button>
-					<button class="btn btn-danger ChatterBox_btn_del" asp-controller="Users" asp-action="Show" asp-route-_Id="@applicationUser.Id">Cancel</button>
+				<!-- Action Buttons -->
+				<div class="d-flex justify-content-between flex-wrap mt-4">
+					<button type="submit" class="btn btn-primary btn-lg">Create Channel</button>
+					<a asp-controller="Users" asp-action="Show" asp-route-_Id="@_User.Id" class="btn btn-secondary btn-lg">Cancel</a>
 				</div>
 			</form>
 		</div>
