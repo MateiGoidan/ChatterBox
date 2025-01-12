@@ -7,7 +7,7 @@
 @{
 	string? UserId = MyUserManager.GetUserId(User);
 
-    string Role = MyUserManager.GetRolesAsync(MyUserManager.GetUserAsync(User).Result).Result.First().ToString();
+	string Role = MyUserManager.GetRolesAsync(MyUserManager.GetUserAsync(User).Result).Result.First().ToString();
 }
 
 <div class="ChatterBox_sitecard">
@@ -43,19 +43,20 @@
 			}
 		</div>
 
-        <div class="d-flex flex-column ChatterBox_lowerSubPanel">
-            <div class="flex-grow-1 overflow-auto text-center" style="max-height: calc(50vh - 150px);">
-                <h2 class="mb-0" style="font-weight: bold; color: #333;">@Model.Name</h2>
-                @if (Model.Category != null)
-                {
-                    <p><small style="color: #4c5c75">@Model.Category.Title</small></p>
-                }
-                <p class="fst-italic">@Model.Description</p>
-            </div>
+		<div class="d-flex flex-column ChatterBox_lowerSubPanel">
+			<div class="flex-grow-1 overflow-auto text-center" style="max-height: calc(50vh - 150px);">
+				<h2 class="mb-0" style="font-weight: bold; color: #333;">@Model.Name</h2>
+				@if (Model.Category != null)
+				{
+					<p><small style="color: #4c5c75">@Model.Category.Title</small></p>
+				}
+				<p class="fst-italic">@Model.Description</p>
+			</div>
 
 			<hr />
 
 			<div class="flex-grow-1 d-flex flex-row justify-content-center flex-wrap gap-5 overflow-auto" style="max-height: calc(50vh - 100px);">
+				<!-- Members List Section -->
 				<div class="d-flex flex-column me-1">
 					<h3 class="text-center mb-3">Members</h3>
 
@@ -78,62 +79,65 @@
 							_UserName = _UserName.Split("@")[0];
 							_UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
 
-                            <div class="card p-2 mb-2" style="width: 25vw;">
-                                <div class="d-flex flex-row justify-content-between align-items-center flex-wrap">
-                                    <div class="flex-grow-1">
-                                        <span class="fw-bold">@_UserName</span>
-                                        @if (_Bind.Role == "Admin")
-                                        {
-                                            <small class="ms-1 badge rounded-pill bg-success">Admin</small>
-                                        }
-                                        else if (_Bind.Role == "Moderator")
-                                        {
-                                            <small class="ms-1 badge rounded-pill bg-danger">Mod</small>
-                                        }
-                                    </div>
+							<div class="card p-2 mb-2" style="width: 25vw;">
+								<div class="d-flex flex-row justify-content-between align-items-center flex-wrap">
+									<div class="flex-grow-1">
+										<a class="fw-bold" style="color: black; text-decoration: none;" asp-controller="Users" asp-action="Show" asp-route-_Id="@_Bind.UserId">
+											@_UserName
+										</a>
 
-                                    @if (_Bind.UserId != UserId && ((ViewBag.UserRole == "Moderator" && _Bind.Role != "Admin") || ViewBag.UserRole == "Admin" || Role == "Admin"))
-                                    {
-                                        <a class="bi bi-three-dots-vertical ChatterBox_link" style="color: black" data-bs-toggle="collapse" href="@($"#collapseForm{_BindUser.Id}")" role="button" aria-expanded="false" aria-controls="@($"collapseForm{@Model.Id}")"></a>
-                                    }
-                                </div>
+										@if (_Bind.Role == "Admin")
+										{
+											<small class="ms-1 badge rounded-pill bg-success">Admin</small>
+										}
+										else if (_Bind.Role == "Moderator")
+										{
+											<small class="ms-1 badge rounded-pill bg-danger">Mod</small>
+										}
+									</div>
 
-                                <div class="collapse" id="@($"collapseForm{_BindUser.Id}")" style="margin: 0.3rem 0 0.5rem 0">
-                                    <div class="d-flex justify-content-end align-items-center flex-wrap">
-                                        @if (_Bind.Role != "Admin" && (ViewBag.UserRole == "Admin" || Role == "Admin"))
-                                        {
-                                            <form asp-controller="Channels" asp-action="Promote" asp-route-Id="@Model.Id" method="post">
-                                                <input type="hidden" name="UserId" value="@_Bind.UserId" />
-                                                <button class="btn btn-primary btn-sm me-1" style="font-size: 1rem;" aria-label="Promote Member" type="submit">Promote</button>
-                                            </form>
-                                        }
+									@if (_Bind.UserId != UserId && ((ViewBag.UserRole == "Moderator" && _Bind.Role != "Admin") || ViewBag.UserRole == "Admin" || Role == "Admin"))
+									{
+										<a class="bi bi-three-dots-vertical" style="color: black" data-bs-toggle="collapse" href="@($"#collapseForm{_BindUser.Id}")" role="button" aria-expanded="false" aria-controls="@($"collapseForm{@Model.Id}")"></a>
+									}
+								</div>
 
-                                        @if (_Bind.Role != "Member" && (ViewBag.UserRole == "Admin" || Role == "Admin"))
-                                        {
-                                            <form asp-controller="Channels" asp-action="Demote" asp-route-Id="@Model.Id" method="post">
-                                                <input type="hidden" name="UserId" value="@_Bind.UserId" />
-                                                <button class="btn btn-warning btn-sm" style="font-size: 1rem;" aria-label="Demote Member" type="submit">Demote</button>
-                                            </form>
-                                        }
+								<div class="collapse" id="@($"collapseForm{_BindUser.Id}")" style="margin: 0.3rem 0 0.5rem 0">
+									<div class="d-flex justify-content-end align-items-center flex-wrap">
+										@if (_Bind.Role != "Admin" && (ViewBag.UserRole == "Admin" || Role == "Admin"))
+										{
+											<form asp-controller="Channels" asp-action="Promote" asp-route-Id="@Model.Id" method="post">
+												<input type="hidden" name="UserId" value="@_Bind.UserId" />
+												<button class="btn btn-primary btn-sm me-1" style="font-size: 1rem;" aria-label="Promote Member" type="submit">Promote</button>
+											</form>
+										}
 
-                                        <form asp-controller="Channels" asp-action="RemoveMember" asp-route-Id="@Model.Id" method="post">
-                                            <input type="hidden" name="UserId" value="@_Bind.UserId" />
-                                            <button class="btn btn-danger btn-sm ms-1" style="font-size: 1rem;" aria-label="Kick Member" type="submit">Kick</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+										@if (_Bind.Role != "Member" && (ViewBag.UserRole == "Admin" || Role == "Admin"))
+										{
+											<form asp-controller="Channels" asp-action="Demote" asp-route-Id="@Model.Id" method="post">
+												<input type="hidden" name="UserId" value="@_Bind.UserId" />
+												<button class="btn btn-warning btn-sm" style="font-size: 1rem;" aria-label="Demote Member" type="submit">Demote</button>
+											</form>
+										}
+
+										<form asp-controller="Channels" asp-action="RemoveMember" asp-route-Id="@Model.Id" method="post">
+											<input type="hidden" name="UserId" value="@_Bind.UserId" />
+											<button class="btn btn-danger btn-sm ms-1" style="font-size: 1rem;" aria-label="Kick Member" type="submit">Kick</button>
+										</form>
+									</div>
+								</div>
+							</div>
 						}
 					</div>
 				</div>
 
 				<div class="flex-grow-1 d-flex flex-column">
+					<!-- Invite User Section -->
 					@if (ViewBag.UserRole != "Member" || Role == "Admin")
 					{
 						<h3 class="text-center">Requests</h3>
 
 						<div class="overflow-auto pt-1 mt-3">
-                            <!-- Invite User Section -->
 							<div class="d-flex justify-content-center mb-2">
 								<form asp-controller="Requests" asp-action="New">
 									<input type="hidden" name="_ChannelId" value="@Model.Id" />
@@ -143,30 +147,30 @@
 										<label class="me-1" for="UserId">Invite User: </label>
 										<select id="UserId" name="_UserId" class="form-control me-1" style="width: auto;" onchange="toggleInviteButton()">
 											@if(ViewBag.NonMembersIds == null) {
-                                                <option value="">No users left</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="">None</option>
+												<option value="">No users left</option>
+											}
+											else
+											{
+												<option value="">None</option>
 
-                                                foreach (var _NonMemberId in ViewBag.NonMembersIds)
-                                                {
-                                                    var _NonMember = await MyUserManager.FindByIdAsync(_NonMemberId);
-                                                    string _NonMemberName = _NonMember.UserName;
-                                                    _NonMemberName = _NonMemberName.Split("@")[0];
-                                                    _NonMemberName = _NonMemberName[0].ToString().ToUpper() + _NonMemberName.Substring(1);
+												foreach (var _NonMemberId in ViewBag.NonMembersIds)
+												{
+													var _NonMember = await MyUserManager.FindByIdAsync(_NonMemberId);
+													string _NonMemberName = _NonMember.UserName;
+													_NonMemberName = _NonMemberName.Split("@")[0];
+													_NonMemberName = _NonMemberName[0].ToString().ToUpper() + _NonMemberName.Substring(1);
 
-                                                    <option value="@_NonMemberId">@_NonMemberName</option>
-                                                }
-                                            }
-                                        </select>
+													<option value="@_NonMemberId">@_NonMemberName</option>
+												}
+											}
+										</select>
 										<button id="inviteButton" class="btn btn-dark ChatterBox_btn_light" style="font-size: 1rem;" type="submit" disabled>Invite</button>
 									</div>
 								</form>
 							</div>
 
-                            <!-- Join Requests Section -->
-                            @if (ViewBag.ChannelRequests != null)
+							<!-- Join Requests Section -->
+							@if (ViewBag.ChannelRequests != null)
 							{
 								foreach (BindRequestChannelUser _Request in ViewBag.ChannelRequests)
 								{
@@ -188,9 +192,9 @@
 
 									<div class="card mb-3">
 										<div class="d-flex justify-content-between align-items-center card-body">
-                                            <div>
-                                                <strong>@_UserName</strong> wants to join your channel!
-                                            </div>
+											<div>
+												<strong>@_UserName</strong> wants to join your channel!
+											</div>
 											<div class="d-flex gap-2">
 												<form asp-controller="Requests" asp-action="Accept" asp-route-Id="@_Request.RequestId" method="post">
 													<button class="btn btn-success btn-sm" style="font-size: 1rem;" type="submit">Accept</button>
@@ -200,7 +204,7 @@
 													<button class="btn btn-danger btn-sm" style="font-size: 1rem;" type="submit">Decline</button>
 												</form>
 											</div>
-                                        </div>
+										</div>
 
 									</div>
 								}
@@ -222,7 +226,7 @@
 					<form asp-controller="Channels" asp-action="Edit" asp-route-Id="@Model.Id" method="get">
 						<button class="btn btn-dark ChatterBox_btn_light" type="submit">Edit</button>
 					</form>
-                }
+				}
 
 				<form asp-controller="Channels" asp-action="RemoveMember" asp-route-Id="@Model.Id" method="post">
 					<input type="hidden" name="UserId" value="@UserId" />
@@ -233,8 +237,8 @@
 				@if (ViewBag.UserRole == "Admin" || Role == "Admin")
 				{
 					<form asp-controller="Channels" asp-action="Delete" asp-route-Id="@Model.Id" method="post">
-                        <button class="btn btn-danger" type="submit">Delete</button>
-                    </form>
+						<button class="btn btn-danger" type="submit">Delete</button>
+					</form>
 				}
 			</div>
 		</div>

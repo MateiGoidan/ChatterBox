@@ -62,7 +62,7 @@
 			{
 				<small class="me-1 badge rounded-pill bg-danger">Mod</small>
 			}
-			<a class="ChatterBox_link" style="color: black" asp-controller="Users" asp-action="Show" asp-route-_Id="@Model.UserId">
+			<a asp-controller="Users" asp-action="Show" asp-route-_Id="@Model.UserId" style="color: black; text-decoration: none;">
 				@_MessageUserName
 			</a>
 			<a class="bi bi-three-dots-vertical" style="color: black;" data-bs-toggle="collapse" href="@($"#collapseForm{@Model.Id}")" role="button" aria-expanded="false" aria-controls="@($"collapseForm{@Model.Id}")"></a>

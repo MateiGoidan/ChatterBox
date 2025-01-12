@@ -8,11 +8,19 @@
 	string _UserName = Model.UserName;
 	_UserName = _UserName.Split("@")[0];
 	_UserName = _UserName[0].ToString().ToUpper() + _UserName.Substring(1);
+
+	string _Role = "";
+	var _User = MyUserManager.FindByIdAsync(Model.Id).Result;
+	if(_User != null) {
+        _Role = MyUserManager.GetRolesAsync(_User).Result.First().ToString();
+    }
+	
+    var _ScreenUser = MyUserManager.GetUserAsync(User).Result;
 }
 
 <div class="ChatterBox_sitecard">
 
-	@Html.Partial("SideBar", Model)
+	@Html.Partial("SideBar", _ScreenUser)
 
 	<div class="ChatterBox_rightPanel">
 		<div class="ChatterBox_upperSubPanel">
@@ -39,7 +47,14 @@
 			}
 		</div>
 		<div class="ChatterBox_lowerSubPanel">
-			<h2 class="text-center mb-4" style="font-weight: bold; color: #333;">About You</h2>
+            @if (Model.Id == MyUserManager.GetUserId(User))
+            {
+                <h2 class="text-center mb-4" style="font-weight: bold; color: #333;">About You</h2>
+            }
+            else
+            {
+                <h2 class="text-center mb-4" style="font-weight: bold; color: #333;">About @_UserName</h2>
+            }
 
 			<hr class="mb-4" />
 
@@ -58,7 +73,7 @@
 			<!-- Role -->
 			<div class="mb-3">
 				<p class="mb-1"><strong>Role:</strong></p>
-				@if (User.IsInRole("Admin"))
+				@if (_Role == "Admin")
 				{
 					<p class="ps-3 text-success fw-bold" style="font-size: 1.1rem;">Admin</p>
 				}

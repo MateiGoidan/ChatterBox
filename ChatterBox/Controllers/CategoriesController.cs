@@ -22,42 +22,6 @@ namespace ChatterBox.Controllers
 			MyRoleManager = _MyRoleManager;
 		}
 
-		[NonAction]
-		public void GetChannels()
-		{
-			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
-				.Where(b => b.UserId == MyUserManager.GetUserId(User))
-				.ToList();
-
-			List<int> _ChannelsIds = new List<int>();
-			foreach (BindChannelUser _Bind in _BindChannelUser)
-			{
-				_ChannelsIds.Add(_Bind.ChannelId);
-			}
-
-			string _Search = "";
-
-			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["search"])))
-			{
-				_Search = Convert.ToString(Request.Query["Search"]);
-
-				_ChannelsIds = MyDataBase.Channels
-					.Where(c => (c.Name.ToUpper().Contains(_Search.ToUpper()) ||
-					c.Description.ToUpper().Contains(_Search.ToUpper())) && 
-					_ChannelsIds.Contains(c.Id))
-					.Select(c => c.Id)
-					.ToList();
-			}
-
-			var _Channels = MyDataBase.Channels
-				.Where(c => _ChannelsIds.Contains(c.Id))
-				.ToList();
-
-			ViewBag.SearchString = _Search;
-
-			ViewBag.UserChannels = _Channels;
-		}
-
 		public IActionResult List()
 		{
 			GetChannels();
@@ -71,21 +35,21 @@ namespace ChatterBox.Controllers
 
 			// Search Engine
 
-			var search = "";
+			var _CategoriesSearch = "";
 
-			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["search"])))
+			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["categoriesSearch"])))
 			{
-				search = Convert.ToString(HttpContext.Request.Query["search"]).Trim(); // Remove spaces 
+				_CategoriesSearch = Convert.ToString(HttpContext.Request.Query["categoriesSearch"]).Trim(); // Remove spaces 
 
 				List<int> categoriesIds = MyDataBase.Categories
-					.Where(a => a.Title != null && a.Title.Contains(search))
+					.Where(a => a.Title != null && a.Title.Contains(_CategoriesSearch))
 					.Select(a => a.Id)
 					.ToList();
 
 				categories = MyDataBase.Categories.Where(a => categoriesIds.Contains(a.Id));
 			}
 
-			ViewBag.SearchString = search;
+			ViewBag.CategoriesSearchString = _CategoriesSearch;
 
 			// Pagination
 
@@ -105,9 +69,9 @@ namespace ChatterBox.Controllers
 			ViewBag.lastPage = Math.Ceiling((float)totalNumb / (float)numbPerPage);
 			ViewBag.Categories = paginatedCategories;
 
-			if (search != "")
+			if (_CategoriesSearch != "")
 			{
-				ViewBag.PaginationBaseUrl = "/Categories/List/?search=" + search + "&page";
+				ViewBag.PaginationBaseUrl = "/Categories/List/?categoriesSearch=" + _CategoriesSearch+ "&search" + "&page";
 			}
 			else
 			{
@@ -222,6 +186,42 @@ namespace ChatterBox.Controllers
 			{
 				return View("Error", new ErrorViewModel { RequestId = "An error occured while trying to delete the category. Please contact the dev team in order to resolve this issue." });
 			}
+		}
+
+		[NonAction]
+		public void GetChannels()
+		{
+			List<BindChannelUser> _BindChannelUser = MyDataBase.BindChannelUserEntries
+				.Where(b => b.UserId == MyUserManager.GetUserId(User))
+				.ToList();
+
+			List<int> _ChannelsIds = new List<int>();
+			foreach (BindChannelUser _Bind in _BindChannelUser)
+			{
+				_ChannelsIds.Add(_Bind.ChannelId);
+			}
+
+			string _Search = "";
+
+			if (!string.IsNullOrEmpty(Convert.ToString(HttpContext.Request.Query["search"])))
+			{
+				_Search = Convert.ToString(Request.Query["Search"]);
+
+				_ChannelsIds = MyDataBase.Channels
+					.Where(c => (c.Name.ToUpper().Contains(_Search.ToUpper()) ||
+					c.Description.ToUpper().Contains(_Search.ToUpper())) && 
+					_ChannelsIds.Contains(c.Id))
+					.Select(c => c.Id)
+					.ToList();
+			}
+
+			var _Channels = MyDataBase.Channels
+				.Where(c => _ChannelsIds.Contains(c.Id))
+				.ToList();
+
+			ViewBag.SearchString = _Search;
+
+			ViewBag.UserChannels = _Channels;
 		}
 	}
 }
