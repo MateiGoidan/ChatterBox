@@ -68,7 +68,7 @@
 			<a class="bi bi-three-dots-vertical" style="color: black;" data-bs-toggle="collapse" href="@($"#collapseForm{@Model.Id}")" role="button" aria-expanded="false" aria-controls="@($"collapseForm{@Model.Id}")"></a>
 		</div>
 		<div class="collapse" id="@($"collapseForm{@Model.Id}")" style="margin: 0.3rem 0 0.5rem 0">
-			<div class="d-flex justify-content-right">
+			<div class="d-flex justify-content-end">
 				<form asp-controller="Messages" asp-action="Edit" asp-route-Id="@Model.Id" method="get">
 					<button class="btn btn-dark ChatterBox_btn_light" style="background-color: transparent; font-size: 15px; margin-right: 0.5rem" type="submit">Edit</button>
 				</form>

@@ -91,6 +91,8 @@ namespace ChatterBox.Controllers
 		[HttpPost]
 		public IActionResult New(Category _Category)
 		{
+			GetChannels();
+
 			if (!ModelState.IsValid)
 			{
 				return View(_Category);
@@ -141,6 +143,8 @@ namespace ChatterBox.Controllers
 			}
 
 			ViewBag.CategoryTitle = _OriginalCategory.Title;
+
+			GetChannels();
 
 			if (!ModelState.IsValid)
 			{

@@ -100,7 +100,7 @@ namespace ChatterBox.Controllers
 
 			if (!ModelState.IsValid || (_Message.Content == null && _File == null))
 			{
-				return Redirect("/Channels/Show/" + _Message.ChannelId);
+				return Redirect("/Messages/Edit/" + _Message.Id);
 			}
 
 			try

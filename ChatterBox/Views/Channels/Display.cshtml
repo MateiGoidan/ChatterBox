@@ -96,7 +96,7 @@
 										}
 									</div>
 
-									@if (_Bind.UserId != UserId && ((ViewBag.UserRole == "Moderator" && _Bind.Role != "Admin") || ViewBag.UserRole == "Admin" || Role == "Admin"))
+									@if ((_Bind.UserId != UserId && ((ViewBag.UserRole == "Moderator" && _Bind.Role != "Admin") || ViewBag.UserRole == "Admin")) || Role == "Admin")
 									{
 										<a class="bi bi-three-dots-vertical" style="color: black" data-bs-toggle="collapse" href="@($"#collapseForm{_BindUser.Id}")" role="button" aria-expanded="false" aria-controls="@($"collapseForm{@Model.Id}")"></a>
 									}
