@@ -1,5 +1,7 @@
 # ChatterBox
 
+<img align="right" src="./Resources/Icon.png" width="17%">
+
 ### **Table of Context**
 - [Description](#description)
 - [Features](#features)
