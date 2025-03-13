@@ -1,5 +1,10 @@
 # ChatterBox
 
+### **Table of Context**
+- [Description](#description)
+- [Features](#features)
+- [Gallery](#gallery)
+
 ## Description
 
 This chat web application, built using **ASP.NET MVC in Visual Studio**, provides an interactive and customizable communication environment tailored to different user roles. The platform enables efficient creation and management of discussion spaces. Features such as message moderation, channel organization into categories, and a powerful search engine ensure a seamless and well-structured experience for all participants.
@@ -31,3 +36,23 @@ This chat web application, built using **ASP.NET MVC in Visual Studio**, provide
    - The inbox also allows users to view **pending invitations** to channels and choose to accept or decline them;
 
 8. Pagination and responsive UI.
+
+## Gallery
+
+### Start Page
+
+<p align="center">
+    <img src="./Resources/LogInPage.png" alt="Starting Page">
+</p>
+
+### User Page
+
+<p align="center">
+    <img src="./Resources/UserPage.png" alt="User Page">
+</p>
+
+### Channel Page
+
+<p align="center">
+    <img src="./Resources/ChatPage.png" alt="Channel Page">
+</p>
