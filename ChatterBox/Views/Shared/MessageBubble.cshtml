@@ -16,10 +16,10 @@
 	string _MessageUserRole = "";
 	if (Model.Channel != null && Model.Channel.BindChannelUser != null)
 	{
-		BindChannelUser _Bind = Model.Channel.BindChannelUser
-									.Where(b => b.UserId == Model.UserId).First();
-		if (_Bind.Role != null)
-		{
+        BindChannelUser _Bind = Model.Channel.BindChannelUser
+                                    .Where(b => b.UserId == Model.UserId).First();
+        if (_Bind.Role != null)
+        {
 			_MessageUserRole = _Bind.Role;
 		}
 	}
